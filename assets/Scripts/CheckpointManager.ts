@@ -50,6 +50,12 @@ export class CheckpointManager extends Component {
         return this._checkpoints[this._currentIndex].clone();
     }
 
+    /** Replace stored checkpoints with a single checkpoint at `pos`. */
+    public setSingleCheckpoint(pos: Vec3) {
+        this._checkpoints = [pos.clone()];
+        this._currentIndex = 0;
+    }
+
     public addCheckpoint(pos: Vec3) {
         this._checkpoints.push(pos.clone());
     }

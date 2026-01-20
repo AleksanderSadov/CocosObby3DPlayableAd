@@ -3,8 +3,6 @@ const { ccclass, property } = _decorator;
 
 @ccclass('ThresholdFallDetection')
 export class ThresholdFallDetection extends Component {
-    @property({ type: Node })
-    public node: Node | null = null;
     @property
     public fallThreshold: number = 5; // how far below checkpoint to consider it a fall
 

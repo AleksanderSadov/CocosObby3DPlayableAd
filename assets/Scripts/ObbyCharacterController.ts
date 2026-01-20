@@ -84,7 +84,11 @@ export class ObbyCharacterController extends Component {
         this.node.off('node-fell', this.onPlayerFell, this);
     }
 
-    onControllerColliderHit (hit: CharacterControllerContact){
+    onControllerColliderHit(hit: CharacterControllerContact) {
+        // onControllerColliderHit триггерится постоянно когда стоит на платформе, нужно иметь это ввиду
+        // поэтому например сохранение чекпоинта проверка через триггер в PlatformCheckpoint.ts, который триггерится только при входе на платформу
+
+        // log("onControllerColliderHit", hit.collider.node);
         // console.log('Test onColliderHit');
         // console.log('selfCCT ', selfCCT.node.name, ' hitCollider ', hitCollider.node.name);
         // console.log('character velocity ', selfCCT.getVelocity());
@@ -120,7 +124,7 @@ export class ObbyCharacterController extends Component {
     }
 
     onControllerTriggerEnter(event: any) {
-        // console.log('cct onControllerTriggerEnter', event);
+        // log('cct onControllerTriggerEnter', event);
         const modelCom = event.characterController.node.getComponent(ModelComponent);
         if (modelCom) {
             modelCom.material.setProperty('mainColor', new Color(255, 0, 0, 99));
@@ -128,11 +132,11 @@ export class ObbyCharacterController extends Component {
     }
 
     onControllerTriggerStay(event: any) {
-        //console.log('cct onControllerTriggerStay', event);
+        // log('cct onControllerTriggerStay', event);
     }
 
     onControllerTriggerExit(event: any) {
-        //console.log('cct onControllerTriggerExit', event);
+        // log('cct onControllerTriggerExit', event);
         const modelCom = event.characterController.node.getComponent(ModelComponent);
         if (modelCom) {
             modelCom.material.setProperty('mainColor', new Color(255, 255, 255, 99));
