@@ -1,5 +1,5 @@
 import { _decorator, Component } from 'cc';
-import { CustomNodeEvent } from './CustomNodeEvents';
+import { CustomNodeEvent } from '../Events/CustomNodeEvents';
 const { ccclass, property } = _decorator;
 
 // одна из возможных реализаций детекта падения - если игрок опустился ниже чекпоинта на определенный порог

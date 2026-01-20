@@ -1,6 +1,6 @@
 import { _decorator, Component, Vec3, CharacterController, isValid, Game } from 'cc';
-import { GameEvent, GlobalEventBus } from './GlobalEventBus';
 import { PlatformCheckpoint } from './PlatformCheckpoint';
+import { GameEvent, GlobalEventBus } from '../Events/GlobalEventBus';
 const { ccclass, property } = _decorator;
 
 @ccclass('CheckpointManager')

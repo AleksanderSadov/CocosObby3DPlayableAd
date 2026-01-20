@@ -1,4 +1,4 @@
-import { _decorator, clamp, Component, EventKeyboard, Input, input, KeyCode, Node } from 'cc';
+import { _decorator, clamp, Component, EventKeyboard, Input, input, KeyCode } from 'cc';
 import { ObbyCharacterController } from './ObbyCharacterController';
 const { ccclass, property, requireComponent } = _decorator;
 

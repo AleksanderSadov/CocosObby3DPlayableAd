@@ -1,5 +1,5 @@
 import { _decorator, ColliderComponent, Component } from 'cc';
-import { GameEvent, GlobalEventBus } from './GlobalEventBus';
+import { GameEvent, GlobalEventBus } from '../Events/GlobalEventBus';
 const { ccclass, property } = _decorator;
 
 @ccclass('PlatformCheckpoint')

@@ -1,8 +1,8 @@
 import {
     _decorator, Component, Node, CharacterController, Vec3, PhysicsSystem, CharacterControllerContact, geometry
 } from 'cc';
-import { GameEvent, GlobalEventBus } from './GlobalEventBus';
-import { CustomNodeEvent } from './CustomNodeEvents';
+import { CustomNodeEvent } from '../Events/CustomNodeEvents';
+import { GameEvent, GlobalEventBus } from '../Events/GlobalEventBus';
 const { ccclass, property } = _decorator;
 
 

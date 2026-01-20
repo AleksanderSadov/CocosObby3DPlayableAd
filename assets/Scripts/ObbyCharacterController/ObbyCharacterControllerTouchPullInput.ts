@@ -1,6 +1,6 @@
 import { _decorator, clamp, Component, EventTouch, Input, input } from 'cc';
 import { ObbyCharacterController } from './ObbyCharacterController';
-import { v2_0 } from './Constants';
+import { v2_0 } from '../General/Constants';
 const { ccclass, requireComponent } = _decorator;
 
 @ccclass('ObbyCharacterControllerTouchPullInput')

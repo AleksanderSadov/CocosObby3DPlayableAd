@@ -1,5 +1,5 @@
 import { _decorator, CharacterController, CharacterControllerContact, Color, Component, log, ModelComponent, Node, Quat, Vec3 } from 'cc';
-import { rotation, scale } from './Constants';
+import { rotation, scale } from '../General/Constants';
 const { ccclass, property } = _decorator;
 
 // это кокосовский пример визуализации столкновений CharacterController для отладки
