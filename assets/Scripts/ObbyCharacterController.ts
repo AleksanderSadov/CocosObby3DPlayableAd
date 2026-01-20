@@ -1,6 +1,7 @@
 import { _decorator, Component, Node, CharacterController, Vec2, Vec3, Input, EventKeyboard, 
     KeyCode, clamp, input, PhysicsSystem, CharacterControllerContact, Quat, EventTouch, ModelComponent, Color, 
-    geometry} from 'cc';
+    geometry,
+    log} from 'cc';
 const { ccclass, property, menu } = _decorator;
 const v2_0 = new Vec2();
 const rotation = new Quat();
@@ -24,12 +25,19 @@ export class ObbyCharacterController extends Component {
     @property
     public pushPower = 4;
 
-    private _cct : CharacterController = null!;
+    private _cct : CharacterController = null!
+
+    @property({readonly: true, visible: true})
     private _control_z = 0;
+    @property({readonly: true, visible: true})
     private _control_x = 0;
+    @property({readonly: true, visible: true})
     private _movement = new Vec3(0,0,0);
+    @property({readonly: true, visible: true})
     private _grounded = true;
+    @property({readonly: true, visible: true})
     private _playerVelocity = new Vec3(0,0,0);
+    @property({readonly: true, visible: true})
     private _doJump = true;
     private _hitPoint: Node = null!;
 
@@ -51,17 +59,17 @@ export class ObbyCharacterController extends Component {
     }
 
     onEnable () {
-        input.on(Input.EventType.KEY_PRESSING, this.onKeyPressing, this);
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
-        input.on(Input.EventType.TOUCH_MOVE, this.onTouchMove, this);
-        input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
+        input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
+        // input.on(Input.EventType.TOUCH_MOVE, this.onTouchMove, this);
+        // input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
     }
 
     onDisable () {
-        input.off(Input.EventType.KEY_PRESSING, this.onKeyPressing, this);
-        input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
-        input.off(Input.EventType.TOUCH_MOVE, this.onTouchMove, this);
-        input.off(Input.EventType.TOUCH_END, this.onTouchEnd, this);
+        input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+        input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
+        // input.off(Input.EventType.TOUCH_MOVE, this.onTouchMove, this);
+        // input.off(Input.EventType.TOUCH_END, this.onTouchEnd, this);
     }
 
     onControllerColliderHit (hit: CharacterControllerContact){
@@ -119,41 +127,65 @@ export class ObbyCharacterController extends Component {
         }
     }
 
-    onKeyDown (event: EventKeyboard) {
+    onKeyDown(event: EventKeyboard) {
         this.keyProcess(event);
     }
-    onKeyPressing (event: EventKeyboard) {
+    onKeyUp(event: EventKeyboard) {
         this.keyProcess(event);
     }
 
-    keyProcess (event: EventKeyboard) {
+    private _isForwardPressed = false;
+    private _isBackPressed = false;
+    private _isLeftPressed = false;
+    private _isRightPressed = false;
+
+    // Управление клавой не требуется по тз, но удобно для тестирования в редакторе
+    // TODO: можно вынести логику разных инпут девайсов в отдельные компоненты
+    keyProcess(event: EventKeyboard) {
         const step = 1;
         switch(event.keyCode) {
             case KeyCode.KEY_W:{
-                this._control_z += step;
+                this._isForwardPressed = event.isPressed;
                 break;
             }
             case KeyCode.KEY_S:{
-                this._control_z -= step;
+                this._isBackPressed = event.isPressed;
                 break;
             }
             case KeyCode.KEY_A:{
-                this._control_x += step;
+                this._isLeftPressed = event.isPressed;
                 break;
             }
             case KeyCode.KEY_D:{
-                this._control_x -= step;
+                this._isRightPressed = event.isPressed;
                 break;
             }
             case KeyCode.SPACE:{
-                this.jump();
+                if (event.isPressed) {
+                    this.jump();
+                }
                 break;
             }
         }
-        this._control_z = clamp(this._control_z, -1,1);
-        this._control_x = clamp(this._control_x, -1,1);
+        let z = 0;
+        if (this._isForwardPressed) {
+            z += step;
+        }
+        if (this._isBackPressed) {
+            z -= step;
+        }
+        let x = 0;
+        if (this._isLeftPressed) {
+            x += step;
+        }
+        if (this._isRightPressed) {
+            x -= step;
+        }
+        this._control_z = clamp(z, -1,1);
+        this._control_x = clamp(x, -1,1);
     }
 
+    // TODO Тач джойстик: ниже реализация из примера кокоса, нам не подходит и нужна реализация джойстика
     onTouchMove (touch: Touch, event: EventTouch) {
         touch.getDelta(v2_0);
         const step = 1;
@@ -198,8 +230,6 @@ export class ObbyCharacterController extends Component {
                 //control impulse
                 this._playerVelocity.z += -this._control_z * this.speed;
                 this._playerVelocity.x += -this._control_x * this.speed;
-                this._control_z = 0;
-                this._control_x = 0;
 
                 // damping
                 this._playerVelocity.x *= this.linearDamping;
