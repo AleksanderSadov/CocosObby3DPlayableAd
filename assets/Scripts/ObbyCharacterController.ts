@@ -2,6 +2,7 @@ import { _decorator, Component, Node, CharacterController, Vec2, Vec3, Input, Ev
     KeyCode, clamp, input, PhysicsSystem, CharacterControllerContact, Quat, EventTouch, ModelComponent, Color, 
     geometry,
     log} from 'cc';
+import { CheckpointManager } from './CheckpointManager';
 const { ccclass, property, menu } = _decorator;
 const v2_0 = new Vec2();
 const rotation = new Quat();
@@ -64,18 +65,23 @@ export class ObbyCharacterController extends Component {
         }
     }
 
+    @property({ type: Node })
+    public checkpointManagerNode: Node | null = null;
+
     onEnable () {
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
         // input.on(Input.EventType.TOUCH_MOVE, this.onTouchMove, this);
         // input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
+        this.node.on('node-fell', this.onPlayerFell, this);
     }
 
     onDisable () {
-        input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
-        input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
+        input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
+        input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
         // input.off(Input.EventType.TOUCH_MOVE, this.onTouchMove, this);
         // input.off(Input.EventType.TOUCH_END, this.onTouchEnd, this);
+        this.node.off('node-fell', this.onPlayerFell, this);
     }
 
     onControllerColliderHit (hit: CharacterControllerContact){
@@ -215,6 +221,18 @@ export class ObbyCharacterController extends Component {
     onSetInvalidPosition(){
         if(!this._cct) return;
         this._cct!.centerWorldPosition = new Vec3(100000, 100000, 100000);
+    }
+
+    private onPlayerFell(event: any) {
+        if (this.checkpointManagerNode) {
+            // Reset internal movement flags/velocity immediately
+            this._playerVelocity.set(0, 0, 0);
+            this._doJump = false;
+            this._jumpAccelCountdown = 0;
+            // Notify the CheckpointManager that this player requests respawn.
+            this.checkpointManagerNode.emit('request-respawn', { player: this.node });
+            return;
+        }
     }
 
     update(deltaTime: number) {

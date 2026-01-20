@@ -42,5 +42,6 @@ Short, actionable guidance for making safe, correct changes in this Cocos Creato
 ## What agents should not do
 - Do not modify files under `library/`, generated `.meta` files, or bulk-reformat files that will be tracked by the engine.
 - Do not remove or rename scene nodes relied upon by scripts without updating corresponding code references (e.g. `HitPoint`, `'台阶测试'`).
+- Do not add property with name 'node' to components, this.node in components is internally managed by the engine
 
 If anything here is unclear or you want more granularity (e.g. recommended test steps to run in the Editor, or a checklist for staging and packaging), tell me which area to expand.
