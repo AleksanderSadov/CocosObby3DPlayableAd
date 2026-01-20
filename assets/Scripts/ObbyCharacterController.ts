@@ -1,11 +1,12 @@
-import { _decorator, Component, Node, CharacterController, Vec2, Vec3, Input, EventKeyboard, 
-    KeyCode, clamp, input, PhysicsSystem, CharacterControllerContact, Quat, EventTouch, ModelComponent, Color, 
-    geometry,
-    log} from 'cc';
-import { CheckpointManager } from './CheckpointManager';
+import {
+    _decorator, Component, Node, CharacterController, Vec2, Vec3,
+    clamp, PhysicsSystem, CharacterControllerContact, Quat, EventTouch, ModelComponent, Color,
+    geometry
+} from 'cc';
 import { GameEvent, GlobalEventBus } from './GlobalEventBus';
 import { CustomNodeEvent } from './CustomNodeEvents';
 const { ccclass, property, menu } = _decorator;
+
 const v2_0 = new Vec2();
 const rotation = new Quat();
 const scale = new Vec3(1);
@@ -63,9 +64,6 @@ export class ObbyCharacterController extends Component {
             this._cct.on('onControllerTriggerExit', this.onControllerTriggerExit, this);
         }
     }
-
-    @property({ type: Node })
-    public checkpointManagerNode: Node | null = null;
 
     onEnable () {
         // input.on(Input.EventType.TOUCH_MOVE, this.onTouchMove, this);
@@ -194,7 +192,7 @@ export class ObbyCharacterController extends Component {
         }
 
         if (this._jumpAccelCountdown > 0) {
-            this._jumpAccelCountdown -= deltaTime;
+            this._jumpAccelCountdown = Math.max(this._jumpAccelCountdown - deltaTime, 0);
             this._playerVelocity.y += this.jumpSpeed * deltaTime;
         }
 

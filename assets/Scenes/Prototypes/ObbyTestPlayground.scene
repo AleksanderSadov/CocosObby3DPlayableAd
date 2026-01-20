@@ -476,9 +476,6 @@
     "allowMoveInAir": true,
     "linearDamping": 0.6,
     "pushPower": 4,
-    "checkpointManagerNode": {
-      "__id__": 5
-    },
     "_id": "c8HQog0RJNPY6wjk8PtzkK"
   },
   {
