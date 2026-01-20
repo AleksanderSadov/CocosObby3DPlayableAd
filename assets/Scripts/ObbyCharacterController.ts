@@ -49,6 +49,7 @@ export class ObbyCharacterController extends Component {
     private _jumpAccelCountdown = 0;
 
     onLoad () {
+        // TODO code completion постоянно советует при копировании позиций использовать clone(), надо бы явным тестом протестировать такую необходимость чтобы разобраться
         this._initialPosition = this.node.position.clone();
         this._cct = this.node.getComponent(CharacterController)!;
         this._cct.on('onControllerColliderHit', this.onControllerColliderHit, this);
