@@ -1,10 +1,8 @@
 import {
-    _decorator, Component, Node, CharacterController, Vec3, PhysicsSystem, CharacterControllerContact, Quat, ModelComponent, Color,
-    geometry
+    _decorator, Component, Node, CharacterController, Vec3, PhysicsSystem, CharacterControllerContact, geometry
 } from 'cc';
 import { GameEvent, GlobalEventBus } from './GlobalEventBus';
 import { CustomNodeEvent } from './CustomNodeEvents';
-import { rotation, scale } from './Constants';
 const { ccclass, property } = _decorator;
 
 
@@ -49,18 +47,11 @@ export class ObbyCharacterController extends Component {
     private _doJump = false;
     @property({readonly: true, visible: true, serializable: false})
     private _jumpAccelCountdown = 0;
-    private _hitPoint: Node = null!;
 
     onLoad () {
         this._initialPosition = this.node.position.clone();
-        this._hitPoint = this.node.scene.getChildByName('HitPoint')!;
         this._cct = this.node.getComponent(CharacterController)!;
-        if (this._cct) {
-            this._cct.on('onControllerColliderHit', this.onControllerColliderHit, this);
-            this._cct.on('onControllerTriggerEnter', this.onControllerTriggerEnter, this);
-            this._cct.on('onControllerTriggerStay', this.onControllerTriggerStay, this);
-            this._cct.on('onControllerTriggerExit', this.onControllerTriggerExit, this);
-        }
+        this._cct.on('onControllerColliderHit', this.onControllerColliderHit, this);
     }
 
     onEnable () {
@@ -75,18 +66,6 @@ export class ObbyCharacterController extends Component {
         // onControllerColliderHit триггерится постоянно когда стоит на платформе, нужно иметь это ввиду
         // поэтому например сохранение чекпоинта проверка через триггер в PlatformCheckpoint.ts, который триггерится только при входе на платформу
 
-        // log("onControllerColliderHit", hit.collider.node);
-        // console.log('Test onColliderHit');
-        // console.log('selfCCT ', selfCCT.node.name, ' hitCollider ', hitCollider.node.name);
-        // console.log('character velocity ', selfCCT.getVelocity());
-        //selfCCT.detectCollisions = false;
-        
-        Quat.rotationTo(rotation, Vec3.UNIT_Y, hit.worldNormal);
-        this._hitPoint.setWorldPosition(hit.worldPosition);
-        scale.set(0.05, 1, 0.05);
-        this._hitPoint.setWorldScale(scale);
-        this._hitPoint.setWorldRotation(rotation);
-        
         const body = hit.collider.attachedRigidBody;
         // no rigidbody
         if (body == null || body.isKinematic) {
@@ -108,26 +87,6 @@ export class ObbyCharacterController extends Component {
         // Apply the push
         Vec3.multiplyScalar(pushDir, pushDir, this.pushPower);
         body.setLinearVelocity(pushDir);
-    }
-
-    onControllerTriggerEnter(event: any) {
-        // log('cct onControllerTriggerEnter', event);
-        const modelCom = event.characterController.node.getComponent(ModelComponent);
-        if (modelCom) {
-            modelCom.material.setProperty('mainColor', new Color(255, 0, 0, 99));
-        }
-    }
-
-    onControllerTriggerStay(event: any) {
-        // log('cct onControllerTriggerStay', event);
-    }
-
-    onControllerTriggerExit(event: any) {
-        // log('cct onControllerTriggerExit', event);
-        const modelCom = event.characterController.node.getComponent(ModelComponent);
-        if (modelCom) {
-            modelCom.material.setProperty('mainColor', new Color(255, 255, 255, 99));
-        }
     }
 
     private onPlayerFell(event: any) {
