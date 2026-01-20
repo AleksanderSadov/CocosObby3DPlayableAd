@@ -1,15 +1,13 @@
 import {
-    _decorator, Component, Node, CharacterController, Vec2, Vec3,
-    clamp, PhysicsSystem, CharacterControllerContact, Quat, EventTouch, ModelComponent, Color,
+    _decorator, Component, Node, CharacterController, Vec3, PhysicsSystem, CharacterControllerContact, Quat, ModelComponent, Color,
     geometry
 } from 'cc';
 import { GameEvent, GlobalEventBus } from './GlobalEventBus';
 import { CustomNodeEvent } from './CustomNodeEvents';
-const { ccclass, property, menu } = _decorator;
+import { rotation, scale } from './Constants';
+const { ccclass, property } = _decorator;
 
-const v2_0 = new Vec2();
-const rotation = new Quat();
-const scale = new Vec3(1);
+
 
 // За основу взят пример из документации: https://docs.cocos.com/creator/3.8/manual/en/cases-and-tutorials/ -> Examples of Physics -> case-character-controller
 // Буду модифицировать по мере необходимости
@@ -66,14 +64,10 @@ export class ObbyCharacterController extends Component {
     }
 
     onEnable () {
-        // input.on(Input.EventType.TOUCH_MOVE, this.onTouchMove, this);
-        // input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
         this.node.on(CustomNodeEvent.NODE_FELL, this.onPlayerFell, this);
     }
 
     onDisable () {
-        // input.off(Input.EventType.TOUCH_MOVE, this.onTouchMove, this);
-        // input.off(Input.EventType.TOUCH_END, this.onTouchEnd, this);
         this.node.off(CustomNodeEvent.NODE_FELL, this.onPlayerFell, this);
     }
 
@@ -134,22 +128,6 @@ export class ObbyCharacterController extends Component {
         if (modelCom) {
             modelCom.material.setProperty('mainColor', new Color(255, 255, 255, 99));
         }
-    }
-
-    // TODO Тач джойстик: ниже реализация из примера кокоса, нам не подходит и нужна реализация джойстика
-    onTouchMove (touch: Touch, event: EventTouch) {
-        touch.getDelta(v2_0);
-        const step = 1;
-        if(Math.abs(v2_0.x) > 1)
-            this.control_x -= step * Math.sign(v2_0.x);
-        if(Math.abs(v2_0.y) > 1)
-            this.control_z += step * Math.sign(v2_0.y);
-
-        this.control_z = clamp(this.control_z, -1,1);
-        this.control_x = clamp(this.control_x, -1,1);
-    }
-
-    onTouchEnd (touch: Touch, event: EventTouch) {
     }
 
     private onPlayerFell(event: any) {
