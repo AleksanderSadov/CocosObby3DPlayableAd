@@ -213,16 +213,6 @@ export class ObbyCharacterController extends Component {
     onTouchEnd (touch: Touch, event: EventTouch) {
     }
 
-    onResetPosition(){
-        if(!this._cct) return;
-        this._cct!.centerWorldPosition = new Vec3(-3,5,6);
-    }
-
-    onSetInvalidPosition(){
-        if(!this._cct) return;
-        this._cct!.centerWorldPosition = new Vec3(100000, 100000, 100000);
-    }
-
     private onPlayerFell(event: any) {
         if (this.checkpointManagerNode) {
             // Reset internal movement flags/velocity immediately
