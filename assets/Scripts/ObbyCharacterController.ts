@@ -23,6 +23,8 @@ export class ObbyCharacterController extends Component {
     @property
     public jumpAccelTime = 0.1;
     @property
+    public allowMoveInAir = true;
+    @property
     public linearDamping = 0.9;
     @property
     public pushPower = 4;
@@ -225,19 +227,19 @@ export class ObbyCharacterController extends Component {
         // Gravity
         this._playerVelocity.y += this.gravityValue * deltaTime;
 
-        if (this._grounded) {
-            if (this._doJump) {
-                this._jumpAccelCountdown = this.jumpAccelTime;
-                this._doJump = false;
-            } else {
-                //control impulse
-                this._playerVelocity.z += -this._control_z * this.speed;
-                this._playerVelocity.x += -this._control_x * this.speed;
+        if (this._grounded && this._doJump) {
+            this._jumpAccelCountdown = this.jumpAccelTime;
+            this._doJump = false;
+        }
 
-                // damping
-                this._playerVelocity.x *= this.linearDamping;
-                this._playerVelocity.z *= this.linearDamping;
-            }
+        if (this._grounded || this.allowMoveInAir) {
+            //control impulse
+            this._playerVelocity.z += -this._control_z * this.speed;
+            this._playerVelocity.x += -this._control_x * this.speed;
+
+            // damping
+            this._playerVelocity.x *= this.linearDamping;
+            this._playerVelocity.z *= this.linearDamping;
         }
 
         if (this._jumpAccelCountdown > 0) {
