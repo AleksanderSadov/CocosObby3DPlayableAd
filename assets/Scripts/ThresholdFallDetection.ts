@@ -1,5 +1,9 @@
-import { _decorator, Component, Node, Vec3 } from 'cc';
+import { _decorator, Component } from 'cc';
+import { CustomNodeEvent } from './CustomNodeEvents';
 const { ccclass, property } = _decorator;
+
+// одна из возможных реализаций детекта падения - если игрок опустился ниже чекпоинта на определенный порог
+// возможный аналог через триггер зоны, но через порог пока показалось более подходящим
 
 @ccclass('ThresholdFallDetection')
 export class ThresholdFallDetection extends Component {
@@ -8,19 +12,7 @@ export class ThresholdFallDetection extends Component {
 
     private checkY = 0;
 
-    onLoad() {
-        if (!this.node) {
-            console.warn('ThresholdFallDetection: `node` is not assigned');
-            return;
-        }
-
-        // Initialize first checkpoint from node start world position
-        const start = this.node.worldPosition.clone();
-        this.checkY = start.y;
-    }
-
     update() {
-        if (!this.node) return;
         const playerY = this.node.worldPosition.y;
         if (playerY < this.checkY - this.fallThreshold) {
             this._emitFall();
@@ -29,6 +21,6 @@ export class ThresholdFallDetection extends Component {
 
     private _emitFall() {
         if (!this.node) return;
-        this.node.emit('node-fell');
+        this.node.emit(CustomNodeEvent.NODE_FELL);
     }
 }

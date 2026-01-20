@@ -3,6 +3,8 @@ import { _decorator, Component, Node, CharacterController, Vec2, Vec3, Input, Ev
     geometry,
     log} from 'cc';
 import { CheckpointManager } from './CheckpointManager';
+import { GameEvent, GlobalEventBus } from './GlobalEventBus';
+import { CustomNodeEvent } from './CustomNodeEvents';
 const { ccclass, property, menu } = _decorator;
 const v2_0 = new Vec2();
 const rotation = new Quat();
@@ -33,6 +35,8 @@ export class ObbyCharacterController extends Component {
     private _cct : CharacterController = null!
 
     @property({readonly: true, visible: true, serializable: false})
+    private _initialPosition: Vec3;
+    @property({readonly: true, visible: true, serializable: false})
     private _control_z = 0;
     @property({readonly: true, visible: true, serializable: false})
     private _control_x = 0;
@@ -54,8 +58,8 @@ export class ObbyCharacterController extends Component {
         }
     }
     onLoad () {
+        this._initialPosition = this.node.position.clone();
         this._hitPoint = this.node.scene.getChildByName('HitPoint')!;
-
         this._cct = this.node.getComponent(CharacterController)!;
         if (this._cct) {
             this._cct.on('onControllerColliderHit', this.onControllerColliderHit, this);
@@ -73,7 +77,7 @@ export class ObbyCharacterController extends Component {
         input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
         // input.on(Input.EventType.TOUCH_MOVE, this.onTouchMove, this);
         // input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
-        this.node.on('node-fell', this.onPlayerFell, this);
+        this.node.on(CustomNodeEvent.NODE_FELL, this.onPlayerFell, this);
     }
 
     onDisable () {
@@ -81,7 +85,7 @@ export class ObbyCharacterController extends Component {
         input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
         // input.off(Input.EventType.TOUCH_MOVE, this.onTouchMove, this);
         // input.off(Input.EventType.TOUCH_END, this.onTouchEnd, this);
-        this.node.off('node-fell', this.onPlayerFell, this);
+        this.node.off(CustomNodeEvent.NODE_FELL, this.onPlayerFell, this);
     }
 
     onControllerColliderHit(hit: CharacterControllerContact) {
@@ -218,15 +222,11 @@ export class ObbyCharacterController extends Component {
     }
 
     private onPlayerFell(event: any) {
-        if (this.checkpointManagerNode) {
-            // Reset internal movement flags/velocity immediately
-            this._playerVelocity.set(0, 0, 0);
-            this._doJump = false;
-            this._jumpAccelCountdown = 0;
-            // Notify the CheckpointManager that this player requests respawn.
-            this.checkpointManagerNode.emit('request-respawn', { player: this.node });
-            return;
-        }
+        // Reset internal movement flags/velocity immediately
+        this._playerVelocity.set(0, 0, 0);
+        this._doJump = false;
+        this._jumpAccelCountdown = 0;
+        GlobalEventBus.emit(GameEvent.REQUEST_RESPAWN, { characterController: this._cct, defaultSpawn: this._initialPosition });
     }
 
     update(deltaTime: number) {

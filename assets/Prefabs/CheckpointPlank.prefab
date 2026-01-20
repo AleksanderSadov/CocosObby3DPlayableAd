@@ -40,7 +40,7 @@
       "__type__": "cc.Vec3",
       "x": 0,
       "y": 0,
-      "z": -25.38
+      "z": 0
     },
     "_lrot": {
       "__type__": "cc.Quat",
@@ -170,8 +170,6 @@
     "__prefab": {
       "__id__": 8
     },
-    "spawnOffsetY": 1.5,
-    "checkpointManagerNode": null,
     "isActiveCheckpoint": false,
     "_id": ""
   },
@@ -220,6 +218,7 @@
       "__id__": 0
     },
     "fileId": "0esMmePw9Lxq45uD6jxHiW",
+    "instance": null,
     "targetOverrides": null
   }
 ]

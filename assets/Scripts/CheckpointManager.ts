@@ -1,90 +1,44 @@
-import { _decorator, Component, Node, Vec3, CharacterController } from 'cc';
+import { _decorator, Component, Vec3, CharacterController, isValid, Game } from 'cc';
+import { GameEvent, GlobalEventBus } from './GlobalEventBus';
+import { PlatformCheckpoint } from './PlatformCheckpoint';
 const { ccclass, property } = _decorator;
 
-/**
- * CheckpointManager
- * - Stores checkpoint positions (first checkpoint is player's start position by default)
- * - Provides API to add/set checkpoints and retrieve the current checkpoint position
- */
 @ccclass('CheckpointManager')
 export class CheckpointManager extends Component {
-    @property({ type: Node })
-    public player: Node | null = null;
+    @property
+    public spawnOffsetY: number = 5;
 
-    private _checkpoints: Vec3[] = [];
-    private _currentIndex = 0;
+    @property({ readonly: true, visible: true, serializable: false})
+    private _checkpoint: PlatformCheckpoint | null = null;
 
     onEnable() {
-        if (this.player) {
-            this._checkpoints.push(this.player.worldPosition.clone());
-            this._currentIndex = 0;
-        }
-        // Listen for respawn requests. External controllers emit 'request-respawn'
-        // on this node with payload { player: Node }.
-        this.node.on('request-respawn', this._onRequestRespawn, this);
+        GlobalEventBus.on(GameEvent.REQUEST_RESPAWN, this._onRequestRespawn, this);
+        GlobalEventBus.on(GameEvent.SAVE_CHECKPOINT, this._setCheckpoint, this);
     }
 
     onDisable() {
-        this.node.off('request-respawn', this._onRequestRespawn, this);
+        GlobalEventBus.off(GameEvent.REQUEST_RESPAWN, this._onRequestRespawn, this);
+        GlobalEventBus.off(GameEvent.SAVE_CHECKPOINT, this._setCheckpoint, this);
     }
 
     private _onRequestRespawn(event: any) {
-        const player: Node | undefined = event && event.player ? event.player : undefined;
-        if (!player) return;
-
-        const cp = this.getCurrentCheckpoint();
-        if (!cp) return;
-
-        // Try to teleport via CharacterController if present, otherwise set world position
-        const cct = player.getComponent(CharacterController) as CharacterController | null;
-        if (cct) {
-            cct.centerWorldPosition = cp.clone();
-            return;
-        }
-
-        player.setWorldPosition(cp);
-    }
-
-    public getCurrentCheckpoint(): Vec3 | null {
-        if (this._checkpoints.length === 0) return null;
-        return this._checkpoints[this._currentIndex].clone();
-    }
-
-    /** Replace stored checkpoints with a single checkpoint at `pos`. */
-    public setSingleCheckpoint(pos: Vec3) {
-        this._checkpoints = [pos.clone()];
-        this._currentIndex = 0;
-    }
-
-    public addCheckpoint(pos: Vec3) {
-        this._checkpoints.push(pos.clone());
-    }
-
-    public addCheckpointAtPlayer() {
-        if (!this.player) return;
-        this.addCheckpoint(this.player.worldPosition);
-    }
-
-    public createSecondCheckpointAbove(offsetY = 5) {
-        if (this._checkpoints.length === 0) return;
-        const first = this._checkpoints[0].clone();
-        first.y += offsetY;
-        this._checkpoints.push(first);
-    }
-
-    public setCurrentIndex(idx: number) {
-        if (this._checkpoints.length === 0) return;
-        this._currentIndex = Math.max(0, Math.min(idx, this._checkpoints.length - 1));
-    }
-
-    public setCheckpointAtPlayer(index: number) {
-        if (!this.player) return;
-        const pos = this.player.worldPosition.clone();
-        if (index < 0) return;
-        if (index >= this._checkpoints.length) {
-            this._checkpoints[index] = pos;
+        const characterController: CharacterController = event.characterController;
+        let respawnPosition: Vec3;
+        if (isValid(this._checkpoint, true)) {
+            respawnPosition = this._checkpoint.node.worldPosition.clone();
         } else {
-            this._checkpoints[index] = pos;
+            respawnPosition = event.defaultSpawn.clone();
         }
+        respawnPosition.add(new Vec3(0, this.spawnOffsetY, 0));
+        characterController.centerWorldPosition = respawnPosition;
+    }
+
+    private _setCheckpoint(checkpoint: PlatformCheckpoint) {
+        // Чтобы активный чекпоинт не стрелял эвенты снова проверка в PlatformCheckpoint
+        if (isValid(this._checkpoint, true)) {
+            this._checkpoint.isActiveCheckpoint = false;
+        }
+        this._checkpoint = checkpoint;
+        this._checkpoint.isActiveCheckpoint = true;
     }
 }
