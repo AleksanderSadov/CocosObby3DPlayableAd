@@ -9,7 +9,9 @@ const scale = new Vec3(1);
 // За основу взят пример из документации: https://docs.cocos.com/creator/3.8/manual/en/cases-and-tutorials/ -> Examples of Physics -> case-character-controller
 // Буду модифицировать по мере необходимости
 
-@ccclass('CharacterControllerTest')
+// TODO Камера: камеру пока поставил по простому следовать за персонажем, надо будет реализовать свободное вращение камеры
+
+@ccclass('ObbyCharacterController')
 export class ObbyCharacterController extends Component {
     @property
     public speed : number = 0.5;
