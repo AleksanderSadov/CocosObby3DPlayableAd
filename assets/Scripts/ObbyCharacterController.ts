@@ -19,7 +19,9 @@ export class ObbyCharacterController extends Component {
     @property
     public gravityValue = -9.81;
     @property
-    public jumpSpeed = 5;
+    public jumpSpeed = 60;
+    @property
+    public jumpAccelTime = 0.1;
     @property
     public linearDamping = 0.9;
     @property
@@ -27,18 +29,20 @@ export class ObbyCharacterController extends Component {
 
     private _cct : CharacterController = null!
 
-    @property({readonly: true, visible: true})
+    @property({readonly: true, visible: true, serializable: false})
     private _control_z = 0;
-    @property({readonly: true, visible: true})
+    @property({readonly: true, visible: true, serializable: false})
     private _control_x = 0;
-    @property({readonly: true, visible: true})
+    @property({readonly: true, visible: true, serializable: false})
     private _movement = new Vec3(0,0,0);
-    @property({readonly: true, visible: true})
+    @property({readonly: true, visible: true, serializable: false})
     private _grounded = true;
-    @property({readonly: true, visible: true})
+    @property({readonly: true, visible: true, serializable: false})
     private _playerVelocity = new Vec3(0,0,0);
-    @property({readonly: true, visible: true})
-    private _doJump = true;
+    @property({readonly: true, visible: true, serializable: false})
+    private _doJump = false;
+    @property({readonly: true, visible: true, serializable: false})
+    private _jumpAccelCountdown = 0;
     private _hitPoint: Node = null!;
 
     jump() {
@@ -222,11 +226,10 @@ export class ObbyCharacterController extends Component {
         this._playerVelocity.y += this.gravityValue * deltaTime;
 
         if (this._grounded) {
-            if(this._doJump){
-                this._playerVelocity.y += this.jumpSpeed;
+            if (this._doJump) {
+                this._jumpAccelCountdown = this.jumpAccelTime;
                 this._doJump = false;
-            }
-            else{
+            } else {
                 //control impulse
                 this._playerVelocity.z += -this._control_z * this.speed;
                 this._playerVelocity.x += -this._control_x * this.speed;
@@ -235,6 +238,11 @@ export class ObbyCharacterController extends Component {
                 this._playerVelocity.x *= this.linearDamping;
                 this._playerVelocity.z *= this.linearDamping;
             }
+        }
+
+        if (this._jumpAccelCountdown > 0) {
+            this._jumpAccelCountdown -= deltaTime;
+            this._playerVelocity.y += this.jumpSpeed * deltaTime;
         }
 
         // Prevent jumping over the height limit.

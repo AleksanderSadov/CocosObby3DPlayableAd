@@ -528,25 +528,10 @@
     "__prefab": null,
     "speed": 4,
     "gravityValue": -9.81,
-    "jumpSpeed": 5,
+    "jumpSpeed": 60,
+    "jumpAccelTime": 0.1,
     "linearDamping": 0.6,
     "pushPower": 4,
-    "_control_z_debug": 0,
-    "_control_x_debug": 0,
-    "_movement": {
-      "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "_grounded": true,
-    "_playerVelocity": {
-      "__type__": "cc.Vec3",
-      "x": 0,
-      "y": 0,
-      "z": 0
-    },
-    "_doJump": true,
     "_id": "c8HQog0RJNPY6wjk8PtzkK"
   },
   {
