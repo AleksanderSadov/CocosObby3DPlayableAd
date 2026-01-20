@@ -134,6 +134,7 @@ export class ObbyCharacterController extends Component {
         }
 
         // Prevent jumping over the height limit.
+        // TODO это из примера кокоса, пока не до конца понял необходимость этой логики. Например isFacingStepOver true когда персонаж упирается в большую ступеньку в примере кокоса
         if (this.isFacingStepOver()) {
             this._playerVelocity.y += this.gravityValue * deltaTime;
             this._playerVelocity.x = 0;
