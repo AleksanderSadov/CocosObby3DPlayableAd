@@ -2,19 +2,19 @@ import { _decorator, Component } from 'cc';
 import { CustomNodeEvent } from '../Events/CustomNodeEvents';
 const { ccclass, property } = _decorator;
 
-// одна из возможных реализаций детекта падения - если игрок опустился ниже чекпоинта на определенный порог
-// возможный аналог через триггер зоны, но через порог пока показалось более подходящим
+// одна из возможных реализаций детекта падения - если игрок опустился ниже порога
+// возможный аналоги
+//  - усложнить и отслеживать относительно чекпоинта
+//  - через триггер зоны
 
 @ccclass('ThresholdFallDetection')
 export class ThresholdFallDetection extends Component {
     @property
-    public fallThreshold: number = 5; // how far below checkpoint to consider it a fall
-
-    private checkY = 0;
+    public fallThreshold: number = -10; // how far below world origin to consider it a fall
 
     update() {
         const playerY = this.node.worldPosition.y;
-        if (playerY < this.checkY - this.fallThreshold) {
+        if (playerY < this.fallThreshold) {
             this._emitFall();
         }
     }
