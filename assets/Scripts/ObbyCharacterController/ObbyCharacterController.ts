@@ -49,6 +49,7 @@ export class ObbyCharacterController extends Component {
     private _jumpAccelCountdown = 0;
 
     onLoad () {
+        // TODO возможно лучше отключить управление персонажем после респавна пока не вернется на позицию, но это с низким приоритетом
         this._initialPosition = this.node.position.clone(); // TODO code completion постоянно советует при копировании позиций использовать clone(), надо бы явным тестом протестировать такую необходимость чтобы разобраться. Потому что Vec3 — это mutable reference-type, и без clone() ты часто работаешь с той же самой ссылкой, а не с копией?
         this._cct = this.node.getComponent(CharacterController)!;
         this._cct.on('onControllerColliderHit', this.onControllerColliderHit, this);

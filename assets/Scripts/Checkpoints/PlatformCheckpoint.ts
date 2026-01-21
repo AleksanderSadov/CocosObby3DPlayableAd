@@ -21,6 +21,7 @@ export class PlatformCheckpoint extends Component {
     protected onEnable(): void {
         // onControllerColliderHit триггерится постоянно когда игрок стоит на платформе, нужно иметь это ввиду
         // поэтому детект сохранения сделал через отдельный триггер коллайдер
+        // TODO триггер может сработать даже если персонаж не полностью презимлился на платформу, но правка пока с низким приоритетом
         this._triggerCollider.on('onControllerTriggerEnter', this.onControllerTriggerEnter, this);
     }
 
