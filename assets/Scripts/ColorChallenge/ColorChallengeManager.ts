@@ -32,11 +32,13 @@ export class ColorChallengeManager extends Component {
     onEnable() {
         GlobalEventBus.on(GameEvent.COLOR_GAME_START, this._startGame, this);
         GlobalEventBus.on(GameEvent.COLOR_GAME_STOP, this._stopGame, this);
+        GlobalEventBus.on(GameEvent.GAME_END, this._stopGame, this);
     }
 
     onDisable() {
         GlobalEventBus.off(GameEvent.COLOR_GAME_START, this._startGame, this);
         GlobalEventBus.off(GameEvent.COLOR_GAME_STOP, this._stopGame, this);
+        GlobalEventBus.off(GameEvent.GAME_END, this._stopGame, this);
         this._stopTimers();
     }
 

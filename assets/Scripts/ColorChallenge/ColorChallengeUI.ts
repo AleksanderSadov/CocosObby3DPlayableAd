@@ -18,11 +18,13 @@ export class ColorChallengeUI extends Component {
     onEnable() {
         GlobalEventBus.on(GameEvent.COLOR_ROUND_TICK, this._onRoundTick, this);
         GlobalEventBus.on(GameEvent.COLOR_GAME_STOP, this._onStop, this);
+        GlobalEventBus.on(GameEvent.GAME_END, this._onStop, this);
     }
 
     onDisable() {
         GlobalEventBus.off(GameEvent.COLOR_ROUND_TICK, this._onRoundTick, this);
         GlobalEventBus.off(GameEvent.COLOR_GAME_STOP, this._onStop, this);
+        GlobalEventBus.off(GameEvent.GAME_END, this._onStop, this);
     }
 
     private _onRoundTick(payload: any) {
