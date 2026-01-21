@@ -22,8 +22,15 @@ export class CharacterControllerTest extends Component {
     private _cct : CharacterController = null!;
     private _control_z = 0;
     private _control_x = 0;
+    @property({readonly: true, visible: true, serializable: false})
     private _movement = new Vec3(0,0,0);
+    @property({readonly: true, visible: true, serializable: false})
     private _grounded = true;
+    @property({visible: true})
+    private get _groundedcct() {
+        return this._cct.isGrounded;
+    }
+    @property({readonly: true, visible: true, serializable: false})
     private _playerVelocity = new Vec3(0,0,0);
     private _doJump = true;
     private _hitPoint: Node = null!;

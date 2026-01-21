@@ -3,6 +3,7 @@ import {
 } from 'cc';
 import { CustomNodeEvent } from '../Events/CustomNodeEvents';
 import { GameEvent, GlobalEventBus } from '../Events/GlobalEventBus';
+import { StateComponent } from '../States/StateComponent';
 const { ccclass, property } = _decorator;
 
 
@@ -17,7 +18,7 @@ export class ObbyCharacterController extends Component {
     @property
     public speed : number = 0.5;
     @property
-    public gravityValue = -9.81;
+    public gravity = -9.81;
     @property
     public jumpSpeed = 60;
     @property
@@ -47,83 +48,56 @@ export class ObbyCharacterController extends Component {
     @property({readonly: true, serializable: false})
     public control_x = 0;
     @property({readonly: true, visible: true, serializable: false})
-    private _movement = new Vec3(0,0,0);
+    public _movement = new Vec3(0,0,0);
+    @property({visible: true})
+    public get _grounded() {
+        return this._cct.isGrounded;
+    }
     @property({readonly: true, visible: true, serializable: false})
-    private _grounded = true;
+    public _playerVelocity = new Vec3(0,0,0);
+    @property({visible: true, serializable: false})
+    public _doJump = false;
     @property({readonly: true, visible: true, serializable: false})
-    private _playerVelocity = new Vec3(0,0,0);
-    @property({serializable: false})
-    private _doJump = false;
-    @property({readonly: true, visible: true, serializable: false})
-    private _jumpAccelCountdown = 0;
+    public _jumpAccelCountdown = 0;
 
-    @property({readonly: true, visible: true, serializable: false})
-    private _isClinging = false;
-    private _clingNormal = new Vec3(0,0,0);
-    private _clingNode: Node | null = null;
+    private _currentState: StateComponent = null;
+
+    @property({visible: true})
+    private get _currentStateName(): string {
+        return this._currentState && this._currentState.constructor ? this._currentState.constructor.name : 'None';
+    }
 
     onLoad () {
         this._initialPosition = this.node.position.clone(); // TODO code completion постоянно советует при копировании позиций использовать clone(), надо бы явным тестом протестировать такую необходимость чтобы разобраться. Потому что Vec3 — это mutable reference-type, и без clone() ты часто работаешь с той же самой ссылкой, а не с копией?
         this._cct = this.node.getComponent(CharacterController)!;
-        
+        this.setState('AirState'); // пока по простому будем считать что всегда стартуем в воздухе
     }
 
-    onEnable () {
+    public setState(stateName: string) {
+        const next = this.getComponent(stateName) as StateComponent; // TODO можно избавиться от строк и сразу по типам
+        if (this._currentState === next) {
+            return;
+        }
+        const prev = this._currentState;
+        if (prev) {
+            prev.onExit(next);
+        }
+        this._currentState = next;
+        this._currentState.onEnter(prev);
+    }
+
+    onEnable() {
         this._cct.on('onControllerColliderHit', this.onControllerColliderHit, this);
         this.node.on(CustomNodeEvent.NODE_FELL, this.onPlayerFell, this);
     }
 
-    onDisable () {
+    onDisable() {
         this._cct.off('onControllerColliderHit', this.onControllerColliderHit, this);
         this.node.off(CustomNodeEvent.NODE_FELL, this.onPlayerFell, this);
     }
 
     onControllerColliderHit(hit: CharacterControllerContact) {
-        // onControllerColliderHit триггерится постоянно когда стоит на платформе, нужно иметь это ввиду
-        // поэтому например сохранение чекпоинта проверка через триггер в PlatformCheckpoint.ts, который триггерится только при входе на платформу
-
-        if (!this._grounded && Math.abs(hit.worldNormal.y) < 0.3 && (Math.abs(hit.worldNormal.x) > 0.7 || Math.abs(hit.worldNormal.z) > 0.7)) {
-            // search for a ClimbableWall component on the hit node or its parents
-            let n: Node | null = hit.collider.node;
-            let found = false;
-            while (n) {
-                const cw = n.getComponent('ClimbableWall');
-                if (cw) { found = true; break; }
-                n = n.parent;
-            }
-            if (found) {
-                this._isClinging = true;
-                this._clingNormal.set(hit.worldNormal.x, hit.worldNormal.y, hit.worldNormal.z);
-                this._clingNode = hit.collider.node;
-                // damp horizontal movement while clinging
-                this._playerVelocity.x = 0;
-                this._playerVelocity.z = 0;
-                // optionally null vertical so we don't slide down immediately
-                this._playerVelocity.y = 0;
-            }
-        }
-
-        const body = hit.collider.attachedRigidBody;
-        // no rigidbody
-        if (body == null || body.isKinematic) {
-            return;
-        }
-
-        // We dont want to push objects below us
-        if (hit.motionDirection.y < -0.1) {
-            return;
-        }
-
-        // Calculate push direction from move direction,
-        // we only push objects to the sides never up and down
-        const pushDir = new Vec3(hit.motionDirection.x, 0, hit.motionDirection.z);
-
-         // If you know how fast your character is trying to move,
-        // then you can also multiply the push velocity by that.
-
-        // Apply the push
-        Vec3.multiplyScalar(pushDir, pushDir, this.pushPower);
-        body.setLinearVelocity(pushDir);
+        this._currentState.onControllerColliderHit(hit);
     }
 
     private onPlayerFell(event: any) {
@@ -135,74 +109,15 @@ export class ObbyCharacterController extends Component {
     }
 
     jump() {
-        if (this._isClinging) {
-            // detach from wall with backward + upward impulse
-            this._isClinging = false;
-            this._playerVelocity.set(-this._clingNormal.x * this.clingPushBack, this.clingDetachImpulse, -this._clingNormal.z * this.clingPushBack);
-            return;
-        }
-
-        if (this._grounded) {
-            this._doJump = true;
-        }
+        this._currentState.onJump();
     }
 
     update(deltaTime: number) {
-        if(!this._cct) 
-            return;
-
         deltaTime = PhysicsSystem.instance.fixedTimeStep;
-        this._grounded = this._cct!.isGrounded;
-
-        if (this._isClinging) {
-            this._playerVelocity.y = this.control_z * this.climbSpeed;
-            this._playerVelocity.x = -this.control_x * this.climbSpeed;
-            this._playerVelocity.z = 0;
-            if (this._doJump) {
-                this._doJump = false; // jump() already applied detach
-            }
-        } else {
-            // Gravity
-            this._playerVelocity.y += this.gravityValue * deltaTime;
-
-            if (this._grounded && this._doJump) {
-                this._jumpAccelCountdown = this.jumpAccelTime;
-                this._doJump = false;
-            }
-
-            if (this._grounded || this.allowMoveInAir) {
-                //control impulse
-                this._playerVelocity.z += -this.control_z * this.speed;
-                this._playerVelocity.x += -this.control_x * this.speed;
-
-                // damping
-                this._playerVelocity.x *= this.linearDamping;
-                this._playerVelocity.z *= this.linearDamping;
-            }
-
-            if (this._jumpAccelCountdown > 0) {
-                this._jumpAccelCountdown = Math.max(this._jumpAccelCountdown - deltaTime, 0);
-                this._playerVelocity.y += this.jumpSpeed * deltaTime;
-            }
-
-            // Prevent jumping over the height limit.
-            // TODO это из примера кокоса, пока не до конца понял необходимость этой логики. Например isFacingStepOver true когда персонаж упирается в большую ступеньку в примере кокоса
-            if (this.isFacingStepOver()) {
-                this._playerVelocity.y += this.gravityValue * deltaTime;
-                this._playerVelocity.x = 0;
-                this._playerVelocity.z = 1;
-            }
-        }
-
-        Vec3.multiplyScalar(this._movement, this._playerVelocity, deltaTime);
-        this._cct!.move(this._movement);
-
-        if (this._grounded) {
-            this._playerVelocity.y = 0;
-            this._isClinging = false;
-        }
+        this._currentState.updateState(deltaTime);
     }
 
+    // TODO это из примера кокоса, пока не до конца понял необходимость этой логики. Например isFacingStepOver true когда персонаж упирается в большую ступеньку в примере кокоса
     isFacingStepOver() {
         // Ray start point is the bottom of the character.
         const position = this.node.position;
@@ -243,5 +158,30 @@ export class ObbyCharacterController extends Component {
             parent = parent.parent;
         }
         return false;
+    }
+
+    // это код из примера кокоса про отталкивание предметов, пока не использую, но оставлю
+    private onColliderPush(hit: CharacterControllerContact) {
+        const body = hit.collider.attachedRigidBody;
+        // no rigidbody
+        if (body == null || body.isKinematic) {
+            return;
+        }
+
+        // We dont want to push objects below us
+        if (hit.motionDirection.y < -0.1) {
+            return;
+        }
+
+        // Calculate push direction from move direction,
+        // we only push objects to the sides never up and down
+        const pushDir = new Vec3(hit.motionDirection.x, 0, hit.motionDirection.z);
+
+         // If you know how fast your character is trying to move,
+        // then you can also multiply the push velocity by that.
+
+        // Apply the push
+        Vec3.multiplyScalar(pushDir, pushDir, this.pushPower);
+        body.setLinearVelocity(pushDir);
     }
 }
