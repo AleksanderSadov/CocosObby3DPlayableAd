@@ -6,16 +6,11 @@ const { ccclass, property } = _decorator;
 @ccclass('CharacterGroundedState')
 export class CharacterGroundedState extends CharacterAbstractState {
     updateState(deltaTime: number) {
-        this._occt._playerVelocity.y += this._occt.gravity * deltaTime;
+        this.baseGravity(deltaTime);
 
-        this._occt._playerVelocity.z += -this._occt.control_z * this._occt.speed;
-        this._occt._playerVelocity.x += -this._occt.control_x * this._occt.speed;
-
-        this._occt._playerVelocity.x *= this._occt.linearDamping;
-        this._occt._playerVelocity.z *= this._occt.linearDamping;
-
-        Vec3.multiplyScalar(this._occt._movement, this._occt._playerVelocity, deltaTime);
-        this._cct!.move(this._occt._movement);
+        this.baseHorizontalVelocity();
+        this.baseHorizontalDamping();
+        this.baseMove(deltaTime);
 
         if (this._occt._grounded) {
             this._occt._playerVelocity.y = 0;

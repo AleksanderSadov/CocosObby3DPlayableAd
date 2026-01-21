@@ -72,10 +72,10 @@ export class CharacterKeyboardInput extends CharacterAbstractInput {
         }
         let x = 0;
         if (this._isLeftPressed) {
-            x += step;
+            x -= step;
         }
         if (this._isRightPressed) {
-            x -= step;
+            x += step;
         }
         this._occt.control_z = clamp(z, -1,1);
         this._occt.control_x = clamp(x, -1,1);

@@ -36,7 +36,7 @@ export class CharacterAirState extends CharacterAbstractState {
     }
 
     updateState(deltaTime: number) {
-        this._occt._playerVelocity.y += this._occt.gravity * deltaTime;
+        this.baseGravity(deltaTime);
 
         if (this._occt._doJump) {
             this._occt._doJump = false;
@@ -71,15 +71,11 @@ export class CharacterAirState extends CharacterAbstractState {
         }
 
         if (this.allowMoveInAir) {
-            this._occt._playerVelocity.z += -this._occt.control_z * this._occt.speed;
-            this._occt._playerVelocity.x += -this._occt.control_x * this._occt.speed;
-
-            this._occt._playerVelocity.x *= this._occt.linearDamping;
-            this._occt._playerVelocity.z *= this._occt.linearDamping;
+            this.baseHorizontalVelocity();
+            this.baseHorizontalDamping();
         }
 
-        Vec3.multiplyScalar(this._occt._movement, this._occt._playerVelocity, deltaTime);
-        this._cct!.move(this._occt._movement);
+        this.baseMove(deltaTime);
 
         if (this._occt._grounded) {
             this._occt.setState(CharacterGroundedState);

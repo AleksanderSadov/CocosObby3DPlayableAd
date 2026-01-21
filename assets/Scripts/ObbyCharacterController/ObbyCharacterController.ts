@@ -1,10 +1,13 @@
 import {
-    _decorator, Component, Node, CharacterController, Vec3, PhysicsSystem, CharacterControllerContact, geometry
+    _decorator, Component, Node, CharacterController, Vec3, PhysicsSystem, CharacterControllerContact, geometry,
+    Camera,
+    v3
 } from 'cc';
 import { CustomNodeEvent } from '../Events/CustomNodeEvents';
 import { GameEvent, GlobalEventBus } from '../Events/GlobalEventBus';
 import { CharacterAirState } from './CharacterStates/CharacterAirState';
 import { CharacterAbstractState } from './CharacterStates/CharacterAbstractState';
+import { EasyController, EasyControllerEvent } from '../../EasyController/kylins_easy_controller/EasyController';
 const { ccclass, property } = _decorator;
 
 // За основу взят пример из документации: https://docs.cocos.com/creator/3.8/manual/en/cases-and-tutorials/ -> Examples of Physics -> case-character-controller
@@ -14,6 +17,8 @@ const { ccclass, property } = _decorator;
 
 @ccclass('ObbyCharacterController')
 export class ObbyCharacterController extends Component {
+    @property(Camera)
+    mainCamera: Camera;
     @property
     public speed: number = 0.5;
     @property
@@ -79,11 +84,13 @@ export class ObbyCharacterController extends Component {
     onEnable() {
         this._cct.on('onControllerColliderHit', this.onControllerColliderHit, this);
         this.node.on(CustomNodeEvent.NODE_FELL, this.onPlayerFell, this);
+        EasyController.on(EasyControllerEvent.CAMERA_ROTATE, this.onCameraMovement, this);
     }
 
     onDisable() {
         this._cct.off('onControllerColliderHit', this.onControllerColliderHit, this);
         this.node.off(CustomNodeEvent.NODE_FELL, this.onPlayerFell, this);
+        EasyController.off(EasyControllerEvent.CAMERA_ROTATE, this.onCameraMovement, this);
     }
 
     onControllerColliderHit(hit: CharacterControllerContact) {
@@ -102,6 +109,11 @@ export class ObbyCharacterController extends Component {
     update(deltaTime: number) {
         deltaTime = PhysicsSystem.instance.fixedTimeStep;
         this._currentState.updateState(deltaTime);
+    }
+
+    onCameraMovement(deltaX: number, deltaY: number) {
+        const cameraRotationY = this.mainCamera.node.eulerAngles.y;
+        this.node.setRotationFromEuler(v3(0, cameraRotationY, 0));
     }
 
     // TODO это из примера кокоса, пока не до конца понял необходимость этой логики. Например isFacingStepOver true когда персонаж упирается в большую ступеньку в примере кокоса
