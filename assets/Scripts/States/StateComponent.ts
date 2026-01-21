@@ -1,16 +1,15 @@
 import { _decorator, CharacterController, CharacterControllerContact, Component } from 'cc';
-import { ObbyCharacterController } from '../ObbyCharacterController/ObbyCharacterController';
-const { ccclass, requireComponent } = _decorator;
+import type { ObbyCharacterController } from '../ObbyCharacterController/ObbyCharacterController';
+const { ccclass } = _decorator;
 
 @ccclass('StateComponent')
-@requireComponent(ObbyCharacterController)
 export class StateComponent extends Component {
     protected _cct: CharacterController | null = null;
     protected _occt: ObbyCharacterController | null = null;
 
     protected onLoad(): void {
         this._cct = this.node.getComponent(CharacterController);
-        this._occt = this.node.getComponent(ObbyCharacterController);
+        this._occt = this.node.getComponent('ObbyCharacterController') as ObbyCharacterController; // строкой для фикса циклической зависимости, пока самое простое решение
     }
 
     // Called when the state becomes active

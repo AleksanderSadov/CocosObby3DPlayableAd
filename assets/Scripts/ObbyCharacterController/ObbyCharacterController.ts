@@ -42,6 +42,7 @@ export class ObbyCharacterController extends Component {
     public _playerVelocity = new Vec3(0,0,0);
     public _doJump = false;
 
+    private _states: Map<new (...args: any[]) => StateComponent, StateComponent> = new Map();
     private _currentState: StateComponent = null;
     @property({visible: true})
     private get _currentStateName(): string {
@@ -55,8 +56,11 @@ export class ObbyCharacterController extends Component {
     }
 
     public setState(stateCtor: new (...args: any[]) => StateComponent) {
-        // TODO можно кэшировать состояния чтобы не искать каждый раз
-        const next = this.getComponent(stateCtor) as StateComponent | null;
+        let next = this._states.get(stateCtor);
+        if (!next) {
+            next = this.getComponent(stateCtor);
+            this._states.set(stateCtor, next);
+        }
         if (this._currentState === next) {
             return;
         }
