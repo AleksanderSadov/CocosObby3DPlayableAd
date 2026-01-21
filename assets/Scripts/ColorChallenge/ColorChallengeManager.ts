@@ -6,6 +6,11 @@ const { ccclass, property } = _decorator;
 
 @ccclass('ColorChallengeManager')
 export class ColorChallengeManager extends Component {
+    @property
+    public roundDuration = 4;
+    @property
+    public waitBetweenRounds = 2;
+
     // Длину и ширину моста пока по простому задам статически прямо в сцене создам ноды
     // А в целом можно усложнить динамической генерацией
     @property({ type: Node })
@@ -18,55 +23,73 @@ export class ColorChallengeManager extends Component {
     @property([Material])
     public materials: Material[] = [];
 
-    @property({ type: Node })
-    public playerNode: Node | null = null;
-
-    @property
-    public roundDuration = 4; // seconds
-
-    private _platforms: ColorPlatform[] = [];
     @property({type: Enum(ColorChallengeType), readonly: true, visible: true, serializable: false})
     private _activeColor: ColorChallengeType;
-    private _remaining = 0;
+    private _roundCountdown = 0;
+    private _waitCountdown = 0;
     private _running = false;
 
-    onLoad() {
-        if (this.platformsRoot) {
-            const comps = this.platformsRoot.getComponentsInChildren(ColorPlatform);
-            this._platforms = comps;
-        }
-    }
-
     onEnable() {
-        GlobalEventBus.on(GameEvent.SAVE_CHECKPOINT, this._onSaveCheckpoint, this);
+        GlobalEventBus.on(GameEvent.COLOR_GAME_START, this._startGame, this);
+        GlobalEventBus.on(GameEvent.COLOR_GAME_STOP, this._stopGame, this);
     }
 
     onDisable() {
-        GlobalEventBus.off(GameEvent.SAVE_CHECKPOINT, this._onSaveCheckpoint, this);
-        this._stopTimer();
+        GlobalEventBus.off(GameEvent.COLOR_GAME_START, this._startGame, this);
+        GlobalEventBus.off(GameEvent.COLOR_GAME_STOP, this._stopGame, this);
+        this._stopTimers();
     }
 
-    private _onSaveCheckpoint(checkpoint: any) {
-        // If the saved checkpoint node equals the platformsRoot parent (configurable), start the challenge.
-        // To start the challenge from a specific checkpoint, set the platformsRoot to be the area and
-        // place this manager in scene and it will start once SAVE_CHECKPOINT occurs for that checkpoint node.
-        // For simplicity, start when any SAVE_CHECKPOINT happens and platformsRoot is set.
-        if (!this.platformsRoot) return;
+    private _startGame() {
         if (!this._running) {
-            this.startRound();
+            this._running = true;
+            this._startRound();
         }
     }
 
-    public startRound() {
-        if (this._platforms.length === 0) return;
-        this._running = true;
+    private _stopGame() {
+        this._running = false;
+        this._stopTimers();
+    }
+
+    private _startRound() {
         const colors = Object.keys(ColorChallengeType);
         const randIndex = Math.floor(Math.random() * colors.length);
         this._activeColor = ColorChallengeType[colors[randIndex]];
-        this._remaining = this.roundDuration;
-        GlobalEventBus.emit(GameEvent.COLOR_ROUND_START, { color: this._activeColor, duration: this._remaining });
-        this._startTimer();
+        this._roundCountdown = this.roundDuration;
+        GlobalEventBus.emit(GameEvent.COLOR_ROUND_TICK, { color: this._activeColor, roundTimer: this._roundCountdown });
+        this.schedule(this._tickRound, 1);
+        this.activatePlatforms(colors);
+    }
 
+    private _stopTimers() {
+        this.unscheduleAllCallbacks();
+    }
+
+    private _tickRound() {
+        this._roundCountdown -= 1;
+        if (this._roundCountdown >= 0) {
+            GlobalEventBus.emit(GameEvent.COLOR_ROUND_TICK, { color: this._activeColor, roundTimer: this._roundCountdown });
+        } else {
+            this.unschedule(this._tickRound);
+            this.deactivatePlatforms(this._activeColor);
+            this._waitCountdown = this.waitBetweenRounds;
+            GlobalEventBus.emit(GameEvent.COLOR_ROUND_TICK, { waitTimer: this._waitCountdown });
+            this.schedule(this._tickWait, 1);
+        }
+    }
+
+    private _tickWait() {
+        this._waitCountdown -= 1;
+        if (this._waitCountdown > 0) {
+            GlobalEventBus.emit(GameEvent.COLOR_ROUND_TICK, { waitTimer: this._waitCountdown });
+        } else {
+            this.unschedule(this._tickWait);
+            this._startRound();
+        }
+    }
+
+    private activatePlatforms(colors: string[]) {
         this.platformsRoot.children.forEach((child) => {
             const colorPlatform = child.getComponent(ColorPlatform);
             const randIndex = Math.floor(Math.random() * colors.length);
@@ -78,27 +101,12 @@ export class ColorChallengeManager extends Component {
         })
     }
 
-    private _startTimer() {
-        this.unscheduleAllCallbacks();
-        this.schedule(this._tick, 1);
-    }
-
-    private _stopTimer() {
-        this.unscheduleAllCallbacks();
-    }
-
-    private _tick() {
-        this._remaining -= 1;
-        GlobalEventBus.emit(GameEvent.COLOR_ROUND_START, { color: this._activeColor, duration: this._remaining });
-        if (this._remaining <= 0) {
-            this._stopTimer();
-            this.platformsRoot.children.forEach((child) => {
-                const colorPlatform = child.getComponent(ColorPlatform);
-                if (colorPlatform.colorType != this._activeColor) {
-                    colorPlatform.node.active = false;
-                }
-            })
-            this.schedule(this.startRound, 2);
-        }
+    private deactivatePlatforms(keepColor: ColorChallengeType) {
+        this.platformsRoot.children.forEach((child) => {
+            const colorPlatform = child.getComponent(ColorPlatform);
+            if (colorPlatform.colorType != keepColor) {
+                colorPlatform.node.active = false;
+            }
+        })
     }
 }

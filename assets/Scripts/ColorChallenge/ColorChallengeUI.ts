@@ -5,37 +5,44 @@ const { ccclass, property } = _decorator;
 @ccclass('ColorChallengeUI')
 export class ColorChallengeUI extends Component {
     @property({ type: Label })
-    public iconLabel: Label | null = null;
+    public firstLabel: Label | null = null;
 
     @property({ type: Label })
-    public timerLabel: Label | null = null;
+    public secondLabel: Label | null = null;
+
+    onLoad() {
+        this.firstLabel.node.active = false;
+        this.secondLabel.node.active = false;
+    }
 
     onEnable() {
-        GlobalEventBus.on(GameEvent.COLOR_ROUND_START, this.onRoundStart, this);
-        GlobalEventBus.on(GameEvent.COLOR_ROUND_SUCCESS, this.onRoundSuccess, this);
-        GlobalEventBus.on(GameEvent.COLOR_ROUND_FAIL, this.onRoundFail, this);
+        GlobalEventBus.on(GameEvent.COLOR_ROUND_TICK, this._onRoundTick, this);
+        GlobalEventBus.on(GameEvent.COLOR_GAME_STOP, this._onStop, this);
     }
 
     onDisable() {
-        GlobalEventBus.off(GameEvent.COLOR_ROUND_START, this.onRoundStart, this);
-        GlobalEventBus.off(GameEvent.COLOR_ROUND_SUCCESS, this.onRoundSuccess, this);
-        GlobalEventBus.off(GameEvent.COLOR_ROUND_FAIL, this.onRoundFail, this);
+        GlobalEventBus.off(GameEvent.COLOR_ROUND_TICK, this._onRoundTick, this);
+        GlobalEventBus.off(GameEvent.COLOR_GAME_STOP, this._onStop, this);
     }
 
-    onRoundStart(payload: any) {
-        const color = payload.color ?? 'none';
-        const duration = payload.duration ?? 0;
-        if (this.iconLabel) this.iconLabel.string = color.toUpperCase();
-        if (this.timerLabel) this.timerLabel.string = `${Math.max(0, Math.round(duration))}`;
+    private _onRoundTick(payload: any) {
+        if (payload.roundTimer != undefined) {
+            this.firstLabel.string = payload.color.toUpperCase();
+            this.secondLabel.string = `${Math.max(0, Math.round(payload.roundTimer))}`;
+            this.secondLabel.node.active = this.firstLabel.node.active = true;
+            return;
+        }
+
+        if (payload.waitTimer != undefined) {
+            this.firstLabel.string = `${Math.max(0, Math.round(payload.waitTimer))}`;
+            this.firstLabel.node.active = true;
+            this.secondLabel.node.active = false;
+            return;
+        }
     }
 
-    onRoundSuccess(payload: any) {
-        // brief flash or update
-    }
-
-    onRoundFail(payload: any) {
-        // clear UI
-        if (this.iconLabel) this.iconLabel.string = '';
-        if (this.timerLabel) this.timerLabel.string = '';
+    private _onStop() {
+        this.firstLabel.node.active = false;
+        this.secondLabel.node.active = false;
     }
 }
