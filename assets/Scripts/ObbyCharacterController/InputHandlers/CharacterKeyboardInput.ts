@@ -6,7 +6,6 @@ const { ccclass, property, requireComponent } = _decorator;
 @ccclass('CharacterKeyboardInput')
 @requireComponent(ObbyCharacterController)
 export class CharacterKeyboardInput extends CharacterAbstractInput {
-    private _occt: ObbyCharacterController | null = null;
     @property({readonly: true, visible: true, serializable: false})
     private _isForwardPressed = false;
     @property({readonly: true, visible: true, serializable: false})
@@ -15,10 +14,6 @@ export class CharacterKeyboardInput extends CharacterAbstractInput {
     private _isLeftPressed = false;
     @property({readonly: true, visible: true, serializable: false})
     private _isRightPressed = false;
-
-    onLoad() {
-        this._occt = this.node.getComponent(ObbyCharacterController);
-    }
 
     protected onEnable(): void {
         super.onEnable();

@@ -7,12 +7,6 @@ const { ccclass, requireComponent } = _decorator;
 @ccclass('CharacterTouchPullInput')
 @requireComponent(ObbyCharacterController)
 export class CharacterTouchPullInput extends CharacterAbstractInput {
-    private _occt: ObbyCharacterController | null = null;
-
-    onLoad() {
-        this._occt = this.node.getComponent(ObbyCharacterController);
-    }
-
     protected onEnable(): void {
         super.onEnable();
         input.on(Input.EventType.TOUCH_MOVE, this.onTouchMove, this);

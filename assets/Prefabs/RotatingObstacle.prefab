@@ -37,8 +37,8 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 10,
-      "z": -24
+      "y": 0,
+      "z": 0
     },
     "_lrot": {
       "__type__": "cc.Quat",
@@ -127,7 +127,7 @@
     },
     "_materials": [
       {
-        "__uuid__": "620b6bf3-0369-4560-837f-2a2c00b73c26",
+        "__uuid__": "1e48f43d-8c23-4ca2-9a3d-e0e5dcb0acb2",
         "__expectedType__": "cc.Material"
       }
     ],
@@ -283,7 +283,7 @@
     },
     "_materials": [
       {
-        "__uuid__": "620b6bf3-0369-4560-837f-2a2c00b73c26",
+        "__uuid__": "1e48f43d-8c23-4ca2-9a3d-e0e5dcb0acb2",
         "__expectedType__": "cc.Material"
       }
     ],
@@ -409,6 +409,7 @@
       "__id__": 0
     },
     "fileId": "31BlCDOdJETaGrkr6udV5+",
+    "instance": null,
     "targetOverrides": null
   }
 ]
