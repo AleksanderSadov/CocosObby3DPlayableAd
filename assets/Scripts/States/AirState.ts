@@ -1,5 +1,7 @@
 import { _decorator, Vec3 } from 'cc';
 import { StateComponent } from './StateComponent';
+import { GroundedState } from './GroundedState';
+import { ClingState } from './ClingState';
 const { ccclass, property } = _decorator;
 
 @ccclass('AirState')
@@ -41,7 +43,7 @@ export class AirState extends StateComponent {
         this._cct!.move(this._occt._movement);
 
         if (this._occt._grounded) {
-            this._occt.setState('GroundedState');
+            this._occt.setState(GroundedState);
             return;
         }
     }
@@ -64,7 +66,7 @@ export class AirState extends StateComponent {
             if (found) {
                 // store normal and switch to cling state
                 // this._occt._lastClingNormal = hit.worldNormal;
-                this._occt.setState('ClingState');
+                this._occt.setState(ClingState);
             }
         }
     }

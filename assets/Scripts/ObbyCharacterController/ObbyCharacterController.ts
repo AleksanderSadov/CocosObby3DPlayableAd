@@ -4,6 +4,7 @@ import {
 import { CustomNodeEvent } from '../Events/CustomNodeEvents';
 import { GameEvent, GlobalEventBus } from '../Events/GlobalEventBus';
 import { StateComponent } from '../States/StateComponent';
+import { AirState } from '../States/AirState';
 const { ccclass, property } = _decorator;
 
 // За основу взят пример из документации: https://docs.cocos.com/creator/3.8/manual/en/cases-and-tutorials/ -> Examples of Physics -> case-character-controller
@@ -50,13 +51,12 @@ export class ObbyCharacterController extends Component {
     onLoad () {
         this._initialPosition = this.node.position.clone(); // TODO code completion постоянно советует при копировании позиций использовать clone(), надо бы явным тестом протестировать такую необходимость чтобы разобраться. Потому что Vec3 — это mutable reference-type, и без clone() ты часто работаешь с той же самой ссылкой, а не с копией?
         this._cct = this.node.getComponent(CharacterController)!;
-        this.setState('AirState'); // пока по простому будем считать что всегда стартуем в воздухе
+        this.setState(AirState); // пока по простому будем считать что всегда стартуем в воздухе
     }
 
-    public setState(stateName: string) {
-        // TODO можно избавиться от строк и сразу по типам
+    public setState(stateCtor: new (...args: any[]) => StateComponent) {
         // TODO можно кэшировать состояния чтобы не искать каждый раз
-        const next = this.getComponent(stateName) as StateComponent;
+        const next = this.getComponent(stateCtor) as StateComponent | null;
         if (this._currentState === next) {
             return;
         }

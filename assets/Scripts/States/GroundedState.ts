@@ -1,5 +1,6 @@
 import { _decorator, Vec3 } from 'cc';
 import { StateComponent } from './StateComponent';
+import { AirState } from './AirState';
 const { ccclass, property } = _decorator;
 
 @ccclass('GroundedState')
@@ -19,12 +20,12 @@ export class GroundedState extends StateComponent {
         if (this._occt._grounded) {
             this._occt._playerVelocity.y = 0;
         } else {
-            this._occt.setState('AirState');
+            this._occt.setState(AirState);
         }
     }
 
     public onJump() {
         this._occt._doJump = true;
-        this._occt.setState('AirState');
+        this._occt.setState(AirState);
     }
 }
