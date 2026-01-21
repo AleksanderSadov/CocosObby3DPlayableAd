@@ -41,6 +41,7 @@ export class ObbyCharacterController extends Component {
     @property({readonly: true, visible: true, serializable: false})
     public _playerVelocity = new Vec3(0,0,0);
     public _doJump = false;
+    public _doClingDetachJump = false;
 
     private _states: Map<new (...args: any[]) => CharacterAbstractState, CharacterAbstractState> = new Map();
     private _currentState: CharacterAbstractState = null;
@@ -52,6 +53,9 @@ export class ObbyCharacterController extends Component {
     onLoad () {
         this._initialPosition = this.node.position.clone(); // TODO code completion постоянно советует при копировании позиций использовать clone(), надо бы явным тестом протестировать такую необходимость чтобы разобраться. Потому что Vec3 — это mutable reference-type, и без clone() ты часто работаешь с той же самой ссылкой, а не с копией?
         this._cct = this.node.getComponent(CharacterController)!;
+    }
+
+    start() {
         this.setState(CharacterAirState); // пока по простому будем считать что всегда стартуем в воздухе
     }
 
@@ -87,8 +91,7 @@ export class ObbyCharacterController extends Component {
     }
 
     private onPlayerFell(event: any) {
-        // Reset internal movement flags/velocity immediately
-        this._playerVelocity.set(0, 0, 0);
+        this._currentState.onRespawn();
         GlobalEventBus.emit(GameEvent.REQUEST_RESPAWN, { characterController: this._cct, defaultSpawn: this._initialPosition });
     }
 

@@ -886,8 +886,12 @@
     "_enabled": true,
     "__prefab": null,
     "jumpSpeed": 60,
-    "jumpAccelTime": 0.1,
+    "jumpAccelerationTime": 0.1,
     "allowMoveInAir": true,
+    "detachJumpSpeed": 60,
+    "detachJumpTime": 0.1,
+    "detachPushBackSpeed": 120,
+    "detachPushBackTime": 1.5,
     "_id": "31BBeAMKZNnb0E66NjWMIF"
   },
   {
@@ -901,8 +905,6 @@
     "_enabled": true,
     "__prefab": null,
     "climbSpeed": 2.5,
-    "detachImpulse": 6,
-    "pushBack": 2.5,
     "_id": "68vhjQNnpOeYZ7+41NvzIj"
   },
   {

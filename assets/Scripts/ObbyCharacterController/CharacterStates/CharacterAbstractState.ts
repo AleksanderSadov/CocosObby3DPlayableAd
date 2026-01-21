@@ -19,6 +19,7 @@ export abstract class CharacterAbstractState extends Component {
     // Update called from the main controller
     public updateState(deltaTime: number): void {}
     // Optional: handle controller collision events
-    public onControllerColliderHit(hit: CharacterControllerContact): void {};
+    public onControllerColliderHit(hit: CharacterControllerContact): void {}
     public onJump(): void {}
+    public onRespawn(): void {}
 }

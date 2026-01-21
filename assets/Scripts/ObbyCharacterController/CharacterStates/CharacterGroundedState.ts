@@ -24,6 +24,10 @@ export class CharacterGroundedState extends CharacterAbstractState {
         }
     }
 
+    public onRespawn() {
+        this._occt._playerVelocity.set(0, 0, 0);
+    }
+
     public onJump() {
         this._occt._doJump = true;
         this._occt.setState(CharacterAirState);

@@ -10,25 +10,67 @@ export class CharacterAirState extends CharacterAbstractState {
     public jumpSpeed = 60;
 
     @property
-    public jumpAccelTime = 0.1;
+    public jumpAccelerationTime = 0.1;
 
     @property
     public allowMoveInAir = true;
 
     @property({readonly: true, visible: true, serializable: false})
-    public _jumpAccelCountdown = 0;
+    public _jumpAccelerationCountdown = 0;
+
+
+
+    @property
+    public detachJumpSpeed = 60;
+    @property
+    public detachJumpTime = 0.1;
+    @property({readonly: true, visible: true, serializable: false})
+    public _detachJumpCountdown = 0;
+
+    @property
+    public detachPushBackSpeed = 120;
+    @property
+    public detachPushBackTime = 1.5;
+    @property({readonly: true, visible: true, serializable: false})
+    public _detachPushBackCountdown = 0;
+
+    public onEnter(prevState?: CharacterAbstractState): void {
+        this.resetCountdowns();
+    }
 
     updateState(deltaTime: number) {
         this._occt._playerVelocity.y += this._occt.gravity * deltaTime;
 
         if (this._occt._doJump) {
             this._occt._doJump = false;
-            this._jumpAccelCountdown = this.jumpAccelTime;
+            this._jumpAccelerationCountdown = this.jumpAccelerationTime;
         }
 
-        if (this._jumpAccelCountdown > 0) {
-            this._jumpAccelCountdown = Math.max(this._jumpAccelCountdown - deltaTime, 0);
+        // TODO можно лучше организовать эту логику с отрывом от стены, но пока так
+        if (this._occt._doClingDetachJump) {
+            this._occt._doClingDetachJump = false;
+            this._detachJumpCountdown = this.detachJumpTime;
+            this._detachPushBackCountdown = this.detachPushBackTime;
+        }
+
+        if (this._jumpAccelerationCountdown > 0) {
+            this._jumpAccelerationCountdown = Math.max(this._jumpAccelerationCountdown - deltaTime, 0);
             this._occt._playerVelocity.y += this.jumpSpeed * deltaTime;
+        }
+
+        if (this._detachJumpCountdown > 0) {
+            this._detachJumpCountdown = Math.max(this._detachJumpCountdown - deltaTime, 0);
+            this._occt._playerVelocity.y += this.detachJumpSpeed * deltaTime;
+        }
+
+        if (this._detachPushBackCountdown > 0) {
+            this._detachPushBackCountdown = Math.max(this._detachPushBackCountdown - deltaTime, 0);
+            // TODO пока достаточно отталкиваться просто по оси Z относительно мира, но можно сделать по нормали стены
+            this._occt._playerVelocity.z += this.detachPushBackSpeed * deltaTime;
+            if (!this.allowMoveInAir) {
+                this._occt._playerVelocity.x *= this._occt.linearDamping;
+                this._occt._playerVelocity.z *= this._occt.linearDamping;
+            }
         }
 
         if (this.allowMoveInAir) {
@@ -49,8 +91,22 @@ export class CharacterAirState extends CharacterAbstractState {
     }
 
     public onExit(nextState?: CharacterAbstractState): void {
-        this._occt._doJump = false;
-        this._jumpAccelCountdown = 0;
+        this.resetFlags();
+        this.resetCountdowns();
+    }
+
+    public onRespawn() {
+        this._occt._playerVelocity.set(0, 0, 0);
+        this.resetFlags();
+        this.resetCountdowns();
+    }
+
+    private resetFlags() {
+        this._occt._doJump = this._occt._doClingDetachJump = false;
+    }
+
+    private resetCountdowns() {
+        this._jumpAccelerationCountdown = this._detachJumpCountdown = this._detachPushBackCountdown = 0;
     }
 
     public onControllerColliderHit(hit: any) {
