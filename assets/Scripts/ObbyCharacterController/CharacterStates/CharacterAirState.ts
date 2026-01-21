@@ -2,6 +2,7 @@ import { _decorator, Vec3 } from 'cc';
 import { CharacterGroundedState } from './CharacterGroundedState';
 import { CharacterClingState } from './CharacterClingState';
 import { CharacterAbstractState } from './CharacterAbstractState';
+import { CustomNodeEvent } from '../../Events/CustomNodeEvents';
 const { ccclass, property } = _decorator;
 
 @ccclass('CharacterAirState')
@@ -31,6 +32,7 @@ export class CharacterAirState extends CharacterAbstractState {
 
     public onEnter(prevState?: CharacterAbstractState): void {
         this.resetCountdowns();
+        this.node.on(CustomNodeEvent.CLIMBABLE_WALL_ENTER, this.clingToWall, this);
     }
 
     updateState(deltaTime: number) {
@@ -88,6 +90,7 @@ export class CharacterAirState extends CharacterAbstractState {
     public onExit(nextState?: CharacterAbstractState): void {
         this.resetFlags();
         this.resetCountdowns();
+        this.node.off(CustomNodeEvent.CLIMBABLE_WALL_ENTER, this.clingToWall, this);
     }
 
     public onRespawn() {
@@ -104,17 +107,7 @@ export class CharacterAirState extends CharacterAbstractState {
         this._jumpAccelerationCountdown = this._detachJumpCountdown = this._detachPushBackCountdown = 0;
     }
 
-    public onControllerColliderHit(hit: any) {
-        // пока только в полете приклепляемся к стенам
-        if (this._occt._grounded) {
-            return;
-        }
-        const climbableWall = hit.collider.node.getComponent('ClimbableWall');
-        if (!climbableWall) {
-            return;
-        }
-        // TODO checkNormal проверку предложил ИИ, но пока не использую для простоты, потом можно еще раз глянуть
-        // const checkNormal = Math.abs(hit.worldNormal.y) < 0.3 && (Math.abs(hit.worldNormal.x) > 0.7 || Math.abs(hit.worldNormal.z) > 0.7);
+    private clingToWall() {
         this._occt.setState(CharacterClingState);
     }
 }
