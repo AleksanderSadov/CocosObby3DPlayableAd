@@ -1,12 +1,12 @@
-import { _decorator, clamp, Component, EventKeyboard, Input, input, KeyCode } from 'cc';
+import { _decorator, clamp, EventKeyboard, Input, input, KeyCode } from 'cc';
 import { ObbyCharacterController } from '../ObbyCharacterController';
-import { GameEvent, GlobalEventBus } from '../../Events/GlobalEventBus';
+import { CharacterAbstractInput } from './CharacterAbstractInput';
 const { ccclass, property, requireComponent } = _decorator;
 
 @ccclass('CharacterKeyboardInput')
 @requireComponent(ObbyCharacterController)
-export class CharacterKeyboardInput extends Component {
-    private _obbyCharacterController: ObbyCharacterController | null = null;
+export class CharacterKeyboardInput extends CharacterAbstractInput {
+    private _occt: ObbyCharacterController | null = null;
     @property({readonly: true, visible: true, serializable: false})
     private _isForwardPressed = false;
     @property({readonly: true, visible: true, serializable: false})
@@ -17,23 +17,19 @@ export class CharacterKeyboardInput extends Component {
     private _isRightPressed = false;
 
     onLoad() {
-        this._obbyCharacterController = this.node.getComponent(ObbyCharacterController);
+        this._occt = this.node.getComponent(ObbyCharacterController);
     }
 
     protected onEnable(): void {
+        super.onEnable();
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
-        GlobalEventBus.on(GameEvent.GAME_END, this.onGameEnd, this);
     }
 
     protected onDisable(): void {
+        super.onDisable();
         input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
-        GlobalEventBus.off(GameEvent.GAME_END, this.onGameEnd, this);
-    }
-
-    onGameEnd() {
-        this.enabled = false;
     }
 
     onKeyDown(event: EventKeyboard) {
@@ -46,6 +42,7 @@ export class CharacterKeyboardInput extends Component {
 
     // Управление клавой не требуется по тз, но удобно для тестирования в редакторе
     keyProcess(event: EventKeyboard) {
+        this.registerUserActivity();
         const step = 1;
         switch(event.keyCode) {
             case KeyCode.KEY_W:{
@@ -66,7 +63,7 @@ export class CharacterKeyboardInput extends Component {
             }
             case KeyCode.SPACE:{
                 if (event.isPressed) {
-                    this._obbyCharacterController.jump();
+                    this._occt.jump();
                 }
                 break;
             }
@@ -85,8 +82,8 @@ export class CharacterKeyboardInput extends Component {
         if (this._isRightPressed) {
             x -= step;
         }
-        this._obbyCharacterController.control_z = clamp(z, -1,1);
-        this._obbyCharacterController.control_x = clamp(x, -1,1);
+        this._occt.control_z = clamp(z, -1,1);
+        this._occt.control_x = clamp(x, -1,1);
     }
 }
 

@@ -5,6 +5,7 @@ import { _decorator, EventTarget } from 'cc';
 export const GlobalEventBus = new EventTarget();
 
 export enum GameEvent {
+    PLAYER_ACTIVITY = 'PLAYER_ACTIVITY',
     GAME_START = 'GAME_START',
     GAME_END = 'GAME_END',
     SAVE_CHECKPOINT = 'SAVE_CHECKPOINT',
