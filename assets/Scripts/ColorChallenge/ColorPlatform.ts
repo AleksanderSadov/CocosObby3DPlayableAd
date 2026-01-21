@@ -1,10 +1,11 @@
-import { _decorator, Component, ColliderComponent } from 'cc';
+import { _decorator, Component, ColliderComponent, Enum } from 'cc';
+import { ColorChallengeType } from '../General/Constants';
 const { ccclass, property } = _decorator;
 
 @ccclass('ColorPlatform')
 export class ColorPlatform extends Component {
-    @property
-    public colorName: string = 'red';
+    @property({type: Enum(ColorChallengeType)})
+    public colorType: ColorChallengeType = ColorChallengeType.Red;
 
     private _trigger: ColliderComponent | null = null;
     public isPlayerOn: boolean = false;

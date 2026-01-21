@@ -4,6 +4,11 @@
 
   /* Add your custom configuration here. */
   "compilerOptions": {
-    "strict": false
+    "strict": false,
+    "lib": [
+      "es2017", // добавил чтобы заработал Object.values
+      "dom", // добавил чтобы вернуть console.log после того как добавил es2017 выше
+    ],
   }
+  
 }

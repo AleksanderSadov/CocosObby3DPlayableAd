@@ -4,3 +4,12 @@ import { Quat, Vec2, Vec3 } from "cc";
 export const v2_0 = new Vec2();
 export const rotation = new Quat();
 export const scale = new Vec3(1);
+
+export enum ColorChallengeType {
+    Blue = "Blue",
+    Green = "Green",
+    Purple = "Purple",
+    Red = "Red",
+    White = "White",
+    Yellow = "Yellow",
+}

@@ -1,12 +1,20 @@
-import { _decorator, Component, Node, Label, CharacterController } from 'cc';
+import { _decorator, Component, Node, Label, CharacterController, Enum, MeshRenderer, Material } from 'cc';
 import { GlobalEventBus, GameEvent } from '../Events/GlobalEventBus';
 import { ColorPlatform } from './ColorPlatform';
+import { ColorChallengeType } from '../General/Constants';
 const { ccclass, property } = _decorator;
 
 @ccclass('ColorChallengeManager')
 export class ColorChallengeManager extends Component {
     @property({ type: Node })
-    public platformsRoot: Node | null = null; // parent that contains color platforms
+    public platformsRoot: Node | null = null; // parent that contains color platforms\
+
+    // Пока по простому просто включу все нужные материалы по очереди
+    // Если укажу их статически в редакторе, то не нужно пока заморачиваться с динамической подгрузкой ресурсов
+    // Из минусов редактировать список будет сложнее, но пока планирую только один раз задать список
+    // Цвета нужно указать в таком порядке как в ColorChallengeType
+    @property([Material])
+    public materials: Material[] = [];
 
     @property({ type: Node })
     public playerNode: Node | null = null;
@@ -15,7 +23,8 @@ export class ColorChallengeManager extends Component {
     public roundDuration = 8; // seconds
 
     private _platforms: ColorPlatform[] = [];
-    private _activeColor: string | null = null;
+    @property({type: Enum(ColorChallengeType), readonly: true, visible: true, serializable: false})
+    private _activeColor: ColorChallengeType;
     private _remaining = 0;
     private _running = false;
 
@@ -50,11 +59,22 @@ export class ColorChallengeManager extends Component {
         if (this._platforms.length === 0) return;
         this._running = true;
         // pick random color among available platforms
-        const colors = Array.from(new Set(this._platforms.map(p => p.colorName)));
-        this._activeColor = colors[Math.floor(Math.random() * colors.length)];
+        const colors = Object.keys(ColorChallengeType);
+        const randIndex = Math.floor(Math.random() * colors.length);
+        this._activeColor = ColorChallengeType[colors[randIndex]];
+        console.log("startRound", colors, this._activeColor, ColorChallengeType["Purple"]);
         this._remaining = this.roundDuration;
         GlobalEventBus.emit(GameEvent.COLOR_ROUND_START, { color: this._activeColor, duration: this._remaining });
         this._startTimer();
+
+        this.platformsRoot.children.forEach((child) => {
+            const colorPlatform = child.getComponent(ColorPlatform);
+            const randIndex = Math.floor(Math.random() * colors.length);
+            const randomColor = ColorChallengeType[colors[randIndex]];
+            colorPlatform.colorType = randomColor;
+            const meshRenderer = child.getComponent(MeshRenderer)
+            meshRenderer.setSharedMaterial(this.materials[randIndex], 0);
+        })
     }
 
     private _startTimer() {
@@ -87,7 +107,7 @@ export class ColorChallengeManager extends Component {
     private _checkPlayerOnActive(): boolean {
         if (!this._activeColor) return false;
         for (const p of this._platforms) {
-            if (p.colorName === this._activeColor && p.isPlayerOn) return true;
+            if (p.colorType === this._activeColor && p.isPlayerOn) return true;
         }
         return false;
     }
