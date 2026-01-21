@@ -1,10 +1,13 @@
-import { _decorator, CharacterController, CharacterControllerContact, Color, Component, log, ModelComponent, Node, Quat, Vec3 } from 'cc';
+import { _decorator, CharacterController, CharacterControllerContact, Color, Component, instantiate, isValid, log, ModelComponent, Node, Prefab, Quat, Vec3 } from 'cc';
 import { rotation, scale } from '../General/Constants';
 const { ccclass, property } = _decorator;
 
 // это кокосовский пример визуализации столкновений CharacterController для отладки
 @ccclass('ObbyCharacterControllerCollisionDebugView')
 export class ObbyCharacterControllerCollisionDebugView extends Component {
+    @property(Prefab)
+    public hitPointPrefab: Prefab | null = null;
+
     @property
     public logToConsole: boolean = false;
      
@@ -24,6 +27,9 @@ export class ObbyCharacterControllerCollisionDebugView extends Component {
     }
 
     protected onDisable(): void {
+        if (isValid(this._hitPoint, true)) {
+            this._hitPoint.active = false;
+        }
         this._cct.off('onControllerColliderHit', this.onControllerColliderHit, this);
         this._cct.off('onControllerTriggerEnter', this.onControllerTriggerEnter, this);
         this._cct.off('onControllerTriggerStay', this.onControllerTriggerStay, this);
@@ -31,11 +37,16 @@ export class ObbyCharacterControllerCollisionDebugView extends Component {
     }
 
     onControllerColliderHit(hit: CharacterControllerContact) {
+        if (!isValid(this._hitPoint, true)) {
+            this._hitPoint = instantiate(this.hitPointPrefab);
+            this.node.scene.addChild(this._hitPoint);
+        }
         Quat.rotationTo(rotation, Vec3.UNIT_Y, hit.worldNormal);
         this._hitPoint.setWorldPosition(hit.worldPosition);
         scale.set(0.05, 1, 0.05);
         this._hitPoint.setWorldScale(scale);
         this._hitPoint.setWorldRotation(rotation);
+        this._hitPoint.active = true;
     }
 
     onControllerTriggerEnter(event: any) {
