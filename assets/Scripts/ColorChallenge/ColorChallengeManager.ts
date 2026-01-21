@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, CharacterController, Enum, MeshRenderer, Material } from 'cc';
+import { _decorator, Component, Node, Enum, MeshRenderer, Material } from 'cc';
 import { GlobalEventBus, GameEvent } from '../Events/GlobalEventBus';
 import { ColorPlatform } from './ColorPlatform';
 import { ColorChallengeType } from '../General/Constants';
@@ -6,7 +6,7 @@ const { ccclass, property } = _decorator;
 
 @ccclass('ColorChallengeManager')
 export class ColorChallengeManager extends Component {
-    // Длину ширину моста пока по простому задам статически прямо в сцене создам ноды
+    // Длину и ширину моста пока по простому задам статически прямо в сцене создам ноды
     // А в целом можно усложнить динамической генерацией
     @property({ type: Node })
     public platformsRoot: Node | null = null; // parent that contains color platforms
@@ -22,7 +22,7 @@ export class ColorChallengeManager extends Component {
     public playerNode: Node | null = null;
 
     @property
-    public roundDuration = 8; // seconds
+    public roundDuration = 4; // seconds
 
     private _platforms: ColorPlatform[] = [];
     @property({type: Enum(ColorChallengeType), readonly: true, visible: true, serializable: false})
@@ -60,11 +60,9 @@ export class ColorChallengeManager extends Component {
     public startRound() {
         if (this._platforms.length === 0) return;
         this._running = true;
-        // pick random color among available platforms
         const colors = Object.keys(ColorChallengeType);
         const randIndex = Math.floor(Math.random() * colors.length);
         this._activeColor = ColorChallengeType[colors[randIndex]];
-        console.log("startRound", colors, this._activeColor, ColorChallengeType["Purple"]);
         this._remaining = this.roundDuration;
         GlobalEventBus.emit(GameEvent.COLOR_ROUND_START, { color: this._activeColor, duration: this._remaining });
         this._startTimer();
@@ -76,6 +74,7 @@ export class ColorChallengeManager extends Component {
             colorPlatform.colorType = randomColor;
             const meshRenderer = child.getComponent(MeshRenderer)
             meshRenderer.setSharedMaterial(this.materials[randIndex], 0);
+            colorPlatform.node.active = true;
         })
     }
 
@@ -91,51 +90,15 @@ export class ColorChallengeManager extends Component {
     private _tick() {
         this._remaining -= 1;
         GlobalEventBus.emit(GameEvent.COLOR_ROUND_START, { color: this._activeColor, duration: this._remaining });
-        // immediate success if player already on correct color
-        if (this._checkPlayerOnActive()) {
-            this._onSuccess();
-            return;
-        }
         if (this._remaining <= 0) {
-            // time up
-            if (this._checkPlayerOnActive()) {
-                this._onSuccess();
-            } else {
-                this._onFail();
-            }
+            this._stopTimer();
+            this.platformsRoot.children.forEach((child) => {
+                const colorPlatform = child.getComponent(ColorPlatform);
+                if (colorPlatform.colorType != this._activeColor) {
+                    colorPlatform.node.active = false;
+                }
+            })
+            this.schedule(this.startRound, 2);
         }
-    }
-
-    private _checkPlayerOnActive(): boolean {
-        if (!this._activeColor) return false;
-        for (const p of this._platforms) {
-            if (p.colorType === this._activeColor && p.isPlayerOn) return true;
-        }
-        return false;
-    }
-
-    private _onSuccess() {
-        GlobalEventBus.emit(GameEvent.COLOR_ROUND_SUCCESS, { color: this._activeColor });
-        // continue with next round
-        this._stopTimer();
-        this.startRound();
-    }
-
-    private _onFail() {
-        GlobalEventBus.emit(GameEvent.COLOR_ROUND_FAIL, { color: this._activeColor });
-        this._stopTimer();
-        // disable platform under player (if any) then request respawn
-        const playerPlatform = this._platforms.find(p => p.isPlayerOn);
-        if (playerPlatform) {
-            playerPlatform.hidePlatform();
-        }
-        // request respawn for player
-        if (this.playerNode) {
-            const cct = this.playerNode.getComponent(CharacterController);
-            if (cct) {
-                GlobalEventBus.emit(GameEvent.REQUEST_RESPAWN, { characterController: cct, defaultSpawn: this.playerNode.worldPosition.clone() });
-            }
-        }
-        this._running = false;
     }
 }
