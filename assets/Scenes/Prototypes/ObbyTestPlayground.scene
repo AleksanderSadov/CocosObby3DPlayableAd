@@ -849,12 +849,8 @@
     "gravity": -9.81,
     "jumpSpeed": 60,
     "jumpAccelTime": 0.1,
-    "allowMoveInAir": true,
     "linearDamping": 0.6,
     "pushPower": 4,
-    "climbSpeed": 2.5,
-    "clingDetachImpulse": 6,
-    "clingPushBack": 2.5,
     "_id": "c8HQog0RJNPY6wjk8PtzkK"
   },
   {
@@ -879,6 +875,7 @@
     },
     "_enabled": true,
     "__prefab": null,
+    "allowMoveInAir": true,
     "_id": "6dTiwj8h1K9a3XgWCF1JNq"
   },
   {
@@ -1276,7 +1273,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "ClimableWall",
+    "_name": "ClimbableWall",
     "_objFlags": 0,
     "__editorExtras__": {},
     "_parent": {
@@ -1390,9 +1387,6 @@
     },
     "_enabled": true,
     "__prefab": null,
-    "climbSpeed": 2.5,
-    "detachImpulse": 6,
-    "pushBack": 2.5,
     "_id": "48hcpJolxJBK1EKSgiFluM"
   },
   {

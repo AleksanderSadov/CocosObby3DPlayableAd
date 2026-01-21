@@ -7,13 +7,6 @@ export class GroundedState extends StateComponent {
     updateState(deltaTime: number) {
         this._occt._playerVelocity.y += this._occt.gravity * deltaTime;
 
-        if (this._occt._doJump) {
-            this._occt._doJump = false;
-            this._occt._jumpAccelCountdown = this._occt.jumpAccelTime;
-            this._occt.setState('AirState');
-            return;
-        }
-
         this._occt._playerVelocity.z += -this._occt.control_z * this._occt.speed;
         this._occt._playerVelocity.x += -this._occt.control_x * this._occt.speed;
 
@@ -32,5 +25,6 @@ export class GroundedState extends StateComponent {
 
     public onJump() {
         this._occt._doJump = true;
+        this._occt.setState('AirState');
     }
 }

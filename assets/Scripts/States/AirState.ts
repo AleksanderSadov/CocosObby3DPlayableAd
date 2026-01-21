@@ -4,15 +4,32 @@ const { ccclass, property } = _decorator;
 
 @ccclass('AirState')
 export class AirState extends StateComponent {
+    @property
+    public jumpSpeed = 60;
+
+    @property
+    public jumpAccelTime = 0.1;
+
+    @property
+    public allowMoveInAir = true;
+
+    @property({readonly: true, visible: true, serializable: false})
+    public _jumpAccelCountdown = 0;
+
     updateState(deltaTime: number) {
         this._occt._playerVelocity.y += this._occt.gravity * deltaTime;
 
-        if (this._occt._jumpAccelCountdown > 0) {
-            this._occt._jumpAccelCountdown = Math.max(this._occt._jumpAccelCountdown - deltaTime, 0);
-            this._occt._playerVelocity.y += this._occt.jumpSpeed * deltaTime;
+        if (this._occt._doJump) {
+            this._occt._doJump = false;
+            this._jumpAccelCountdown = this.jumpAccelTime;
         }
 
-        if (this._occt.allowMoveInAir) {
+        if (this._jumpAccelCountdown > 0) {
+            this._jumpAccelCountdown = Math.max(this._jumpAccelCountdown - deltaTime, 0);
+            this._occt._playerVelocity.y += this.jumpSpeed * deltaTime;
+        }
+
+        if (this.allowMoveInAir) {
             this._occt._playerVelocity.z += -this._occt.control_z * this._occt.speed;
             this._occt._playerVelocity.x += -this._occt.control_x * this._occt.speed;
 
@@ -27,6 +44,11 @@ export class AirState extends StateComponent {
             this._occt.setState('GroundedState');
             return;
         }
+    }
+
+    public onExit(nextState?: StateComponent): void {
+        this._occt._doJump = false;
+        this._jumpAccelCountdown = 0;
     }
 
     public onControllerColliderHit(hit: any) {

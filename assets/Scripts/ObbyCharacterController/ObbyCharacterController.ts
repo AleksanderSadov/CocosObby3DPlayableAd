@@ -6,8 +6,6 @@ import { GameEvent, GlobalEventBus } from '../Events/GlobalEventBus';
 import { StateComponent } from '../States/StateComponent';
 const { ccclass, property } = _decorator;
 
-
-
 // За основу взят пример из документации: https://docs.cocos.com/creator/3.8/manual/en/cases-and-tutorials/ -> Examples of Physics -> case-character-controller
 // Буду модифицировать по мере необходимости
 
@@ -16,33 +14,19 @@ const { ccclass, property } = _decorator;
 @ccclass('ObbyCharacterController')
 export class ObbyCharacterController extends Component {
     @property
-    public speed : number = 0.5;
+    public speed: number = 0.5;
     @property
     public gravity = -9.81;
-    @property
-    public jumpSpeed = 60;
-    @property
-    public jumpAccelTime = 0.1;
-    @property
-    public allowMoveInAir = true;
     @property
     public linearDamping = 0.9;
     @property
     public pushPower = 4;
 
-    @property
-    public climbSpeed = 2.5;
-
-    @property
-    public clingDetachImpulse = 6;
-
-    @property
-    public clingPushBack = 2.5;
-
     private _cct : CharacterController = null!
 
     @property({readonly: true, visible: true, serializable: false})
     private _initialPosition: Vec3;
+
     @property({readonly: true, serializable: false})
     public control_z = 0;
     @property({readonly: true, serializable: false})
@@ -51,20 +35,16 @@ export class ObbyCharacterController extends Component {
     public _movement = new Vec3(0,0,0);
     @property({visible: true})
     public get _grounded() {
-        return this._cct.isGrounded;
+        return this._cct?.isGrounded;
     }
     @property({readonly: true, visible: true, serializable: false})
     public _playerVelocity = new Vec3(0,0,0);
-    @property({visible: true, serializable: false})
     public _doJump = false;
-    @property({readonly: true, visible: true, serializable: false})
-    public _jumpAccelCountdown = 0;
 
     private _currentState: StateComponent = null;
-
     @property({visible: true})
     private get _currentStateName(): string {
-        return this._currentState && this._currentState.constructor ? this._currentState.constructor.name : 'None';
+        return this._currentState?.constructor?.name ?? 'None';
     }
 
     onLoad () {
@@ -74,7 +54,9 @@ export class ObbyCharacterController extends Component {
     }
 
     public setState(stateName: string) {
-        const next = this.getComponent(stateName) as StateComponent; // TODO можно избавиться от строк и сразу по типам
+        // TODO можно избавиться от строк и сразу по типам
+        // TODO можно кэшировать состояния чтобы не искать каждый раз
+        const next = this.getComponent(stateName) as StateComponent;
         if (this._currentState === next) {
             return;
         }
@@ -103,8 +85,6 @@ export class ObbyCharacterController extends Component {
     private onPlayerFell(event: any) {
         // Reset internal movement flags/velocity immediately
         this._playerVelocity.set(0, 0, 0);
-        this._doJump = false;
-        this._jumpAccelCountdown = 0;
         GlobalEventBus.emit(GameEvent.REQUEST_RESPAWN, { characterController: this._cct, defaultSpawn: this._initialPosition });
     }
 
