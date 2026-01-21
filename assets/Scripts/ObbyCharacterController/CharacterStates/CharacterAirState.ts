@@ -8,17 +8,12 @@ const { ccclass, property } = _decorator;
 export class CharacterAirState extends CharacterAbstractState {
     @property
     public jumpSpeed = 60;
-
     @property
     public jumpAccelerationTime = 0.1;
-
     @property
     public allowMoveInAir = true;
-
     @property({readonly: true, visible: true, serializable: false})
     public _jumpAccelerationCountdown = 0;
-
-
 
     @property
     public detachJumpSpeed = 60;
@@ -110,20 +105,16 @@ export class CharacterAirState extends CharacterAbstractState {
     }
 
     public onControllerColliderHit(hit: any) {
-        // detect climbable wall: mostly horizontal normal and not grounded
-        if (!this._occt._grounded && Math.abs(hit.worldNormal.y) < 0.3 && (Math.abs(hit.worldNormal.x) > 0.7 || Math.abs(hit.worldNormal.z) > 0.7)) {
-            let n: any = hit.collider.node;
-            let found = false;
-            while (n) {
-                const cw = n.getComponent && n.getComponent('ClimbableWall');
-                if (cw) { found = true; break; }
-                n = n.parent;
-            }
-            if (found) {
-                // store normal and switch to cling state
-                // this._occt._lastClingNormal = hit.worldNormal;
-                this._occt.setState(CharacterClingState);
-            }
+        // пока только в полете приклепляемся к стенам
+        if (this._occt._grounded) {
+            return;
         }
+        const climbableWall = hit.collider.node.getComponent('ClimbableWall');
+        if (!climbableWall) {
+            return;
+        }
+        // TODO checkNormal проверку предложил ИИ, но пока не использую для простоты, потом можно еще раз глянуть
+        // const checkNormal = Math.abs(hit.worldNormal.y) < 0.3 && (Math.abs(hit.worldNormal.x) > 0.7 || Math.abs(hit.worldNormal.z) > 0.7);
+        this._occt.setState(CharacterClingState);
     }
 }
