@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Label, CharacterController, Enum, MeshRenderer, Material } from 'cc';
+import { _decorator, Component, Node, CharacterController, Enum, MeshRenderer, Material } from 'cc';
 import { GlobalEventBus, GameEvent } from '../Events/GlobalEventBus';
 import { ColorPlatform } from './ColorPlatform';
 import { ColorChallengeType } from '../General/Constants';
@@ -6,11 +6,13 @@ const { ccclass, property } = _decorator;
 
 @ccclass('ColorChallengeManager')
 export class ColorChallengeManager extends Component {
+    // Длину ширину моста пока по простому задам статически прямо в сцене создам ноды
+    // А в целом можно усложнить динамической генерацией
     @property({ type: Node })
-    public platformsRoot: Node | null = null; // parent that contains color platforms\
+    public platformsRoot: Node | null = null; // parent that contains color platforms
 
     // Пока по простому просто включу все нужные материалы по очереди
-    // Если укажу их статически в редакторе, то не нужно пока заморачиваться с динамической подгрузкой ресурсов
+    // Если укажу их статически в редакторе то они войдут в билд и не нужно пока заморачиваться с динамической подгрузкой ресурсов
     // Из минусов редактировать список будет сложнее, но пока планирую только один раз задать список
     // Цвета нужно указать в таком порядке как в ColorChallengeType
     @property([Material])
