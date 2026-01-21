@@ -1,9 +1,9 @@
 import { _decorator, CharacterController, CharacterControllerContact, Component } from 'cc';
-import type { ObbyCharacterController } from '../ObbyCharacterController/ObbyCharacterController';
+import type { ObbyCharacterController } from '../ObbyCharacterController';
 const { ccclass } = _decorator;
 
-@ccclass('StateComponent')
-export class StateComponent extends Component {
+@ccclass('CharacterAbstractState')
+export abstract class CharacterAbstractState extends Component {
     protected _cct: CharacterController | null = null;
     protected _occt: ObbyCharacterController | null = null;
 
@@ -13,9 +13,9 @@ export class StateComponent extends Component {
     }
 
     // Called when the state becomes active
-    public onEnter(prevState?: StateComponent): void {}
+    public onEnter(prevState?: CharacterAbstractState): void {}
     // Called when the state is exited
-    public onExit(nextState?: StateComponent): void {}
+    public onExit(nextState?: CharacterAbstractState): void {}
     // Update called from the main controller
     public updateState(deltaTime: number): void {}
     // Optional: handle controller collision events

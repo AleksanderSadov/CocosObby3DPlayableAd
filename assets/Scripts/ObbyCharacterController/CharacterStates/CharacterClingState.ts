@@ -1,9 +1,9 @@
 import { _decorator, Vec3 } from 'cc';
-import { StateComponent } from './StateComponent';
+import { CharacterAbstractState } from './CharacterAbstractState';
 const { ccclass, property } = _decorator;
 
-@ccclass('ClingState')
-export class ClingState extends StateComponent {
+@ccclass('CharacterClingState')
+export class CharacterClingState extends CharacterAbstractState {
     @property
     public climbSpeed = 2.5;
 
@@ -15,7 +15,7 @@ export class ClingState extends StateComponent {
 
     private _clingNormal = new Vec3();
 
-    onEnter(prev?: StateComponent) {
+    onEnter(prev?: CharacterAbstractState) {
         // store normal if provided via controller
         // if ((this._occt as any)._lastClingNormal) {
         //     this._clingNormal = (this._occt as any)._lastClingNormal.clone();

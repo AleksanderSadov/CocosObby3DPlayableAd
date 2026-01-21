@@ -1,10 +1,10 @@
 import { _decorator, clamp, Component, EventKeyboard, Input, input, KeyCode } from 'cc';
-import { ObbyCharacterController } from './ObbyCharacterController';
+import { ObbyCharacterController } from '../ObbyCharacterController';
 const { ccclass, property, requireComponent } = _decorator;
 
-@ccclass('ObbyCharacterControllerKeyboardInput')
+@ccclass('CharacterKeyboardInput')
 @requireComponent(ObbyCharacterController)
-export class ObbyCharacterControllerKeyboardInput extends Component {
+export class CharacterKeyboardInput extends Component {
     private _obbyCharacterController: ObbyCharacterController | null = null;
     @property({readonly: true, visible: true, serializable: false})
     private _isForwardPressed = false;

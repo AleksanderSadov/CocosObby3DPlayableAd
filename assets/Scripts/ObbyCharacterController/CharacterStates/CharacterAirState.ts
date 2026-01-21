@@ -1,11 +1,11 @@
 import { _decorator, Vec3 } from 'cc';
-import { StateComponent } from './StateComponent';
-import { GroundedState } from './GroundedState';
-import { ClingState } from './ClingState';
+import { CharacterGroundedState } from './CharacterGroundedState';
+import { CharacterClingState } from './CharacterClingState';
+import { CharacterAbstractState } from './CharacterAbstractState';
 const { ccclass, property } = _decorator;
 
-@ccclass('AirState')
-export class AirState extends StateComponent {
+@ccclass('CharacterAirState')
+export class CharacterAirState extends CharacterAbstractState {
     @property
     public jumpSpeed = 60;
 
@@ -43,12 +43,12 @@ export class AirState extends StateComponent {
         this._cct!.move(this._occt._movement);
 
         if (this._occt._grounded) {
-            this._occt.setState(GroundedState);
+            this._occt.setState(CharacterGroundedState);
             return;
         }
     }
 
-    public onExit(nextState?: StateComponent): void {
+    public onExit(nextState?: CharacterAbstractState): void {
         this._occt._doJump = false;
         this._jumpAccelCountdown = 0;
     }
@@ -66,7 +66,7 @@ export class AirState extends StateComponent {
             if (found) {
                 // store normal and switch to cling state
                 // this._occt._lastClingNormal = hit.worldNormal;
-                this._occt.setState(ClingState);
+                this._occt.setState(CharacterClingState);
             }
         }
     }

@@ -1,10 +1,10 @@
 import { _decorator, Vec3 } from 'cc';
-import { StateComponent } from './StateComponent';
-import { AirState } from './AirState';
+import { CharacterAirState } from './CharacterAirState';
+import { CharacterAbstractState } from './CharacterAbstractState';
 const { ccclass, property } = _decorator;
 
-@ccclass('GroundedState')
-export class GroundedState extends StateComponent {
+@ccclass('CharacterGroundedState')
+export class CharacterGroundedState extends CharacterAbstractState {
     updateState(deltaTime: number) {
         this._occt._playerVelocity.y += this._occt.gravity * deltaTime;
 
@@ -20,12 +20,12 @@ export class GroundedState extends StateComponent {
         if (this._occt._grounded) {
             this._occt._playerVelocity.y = 0;
         } else {
-            this._occt.setState(AirState);
+            this._occt.setState(CharacterAirState);
         }
     }
 
     public onJump() {
         this._occt._doJump = true;
-        this._occt.setState(AirState);
+        this._occt.setState(CharacterAirState);
     }
 }

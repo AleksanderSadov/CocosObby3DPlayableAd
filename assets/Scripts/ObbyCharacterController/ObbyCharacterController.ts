@@ -3,8 +3,8 @@ import {
 } from 'cc';
 import { CustomNodeEvent } from '../Events/CustomNodeEvents';
 import { GameEvent, GlobalEventBus } from '../Events/GlobalEventBus';
-import { StateComponent } from '../States/StateComponent';
-import { AirState } from '../States/AirState';
+import { CharacterAirState } from './CharacterStates/CharacterAirState';
+import { CharacterAbstractState } from './CharacterStates/CharacterAbstractState';
 const { ccclass, property } = _decorator;
 
 // За основу взят пример из документации: https://docs.cocos.com/creator/3.8/manual/en/cases-and-tutorials/ -> Examples of Physics -> case-character-controller
@@ -42,8 +42,8 @@ export class ObbyCharacterController extends Component {
     public _playerVelocity = new Vec3(0,0,0);
     public _doJump = false;
 
-    private _states: Map<new (...args: any[]) => StateComponent, StateComponent> = new Map();
-    private _currentState: StateComponent = null;
+    private _states: Map<new (...args: any[]) => CharacterAbstractState, CharacterAbstractState> = new Map();
+    private _currentState: CharacterAbstractState = null;
     @property({visible: true})
     private get _currentStateName(): string {
         return this._currentState?.constructor?.name ?? 'None';
@@ -52,10 +52,10 @@ export class ObbyCharacterController extends Component {
     onLoad () {
         this._initialPosition = this.node.position.clone(); // TODO code completion постоянно советует при копировании позиций использовать clone(), надо бы явным тестом протестировать такую необходимость чтобы разобраться. Потому что Vec3 — это mutable reference-type, и без clone() ты часто работаешь с той же самой ссылкой, а не с копией?
         this._cct = this.node.getComponent(CharacterController)!;
-        this.setState(AirState); // пока по простому будем считать что всегда стартуем в воздухе
+        this.setState(CharacterAirState); // пока по простому будем считать что всегда стартуем в воздухе
     }
 
-    public setState(stateCtor: new (...args: any[]) => StateComponent) {
+    public setState(stateCtor: new (...args: any[]) => CharacterAbstractState) {
         let next = this._states.get(stateCtor);
         if (!next) {
             next = this.getComponent(stateCtor);
