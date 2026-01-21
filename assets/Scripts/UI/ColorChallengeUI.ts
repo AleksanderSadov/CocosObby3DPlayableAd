@@ -1,4 +1,4 @@
-import { _decorator, Component, Label, Node } from 'cc';
+import { _decorator, Component, Label } from 'cc';
 import { GlobalEventBus, GameEvent } from '../Events/GlobalEventBus';
 const { ccclass, property } = _decorator;
 

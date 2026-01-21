@@ -1,5 +1,6 @@
 import { _decorator, clamp, Component, EventKeyboard, Input, input, KeyCode } from 'cc';
 import { ObbyCharacterController } from '../ObbyCharacterController';
+import { GameEvent, GlobalEventBus } from '../../Events/GlobalEventBus';
 const { ccclass, property, requireComponent } = _decorator;
 
 @ccclass('CharacterKeyboardInput')
@@ -22,11 +23,17 @@ export class CharacterKeyboardInput extends Component {
     protected onEnable(): void {
         input.on(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.on(Input.EventType.KEY_UP, this.onKeyUp, this);
+        GlobalEventBus.on(GameEvent.GAME_END, this.onGameEnd, this);
     }
 
     protected onDisable(): void {
         input.off(Input.EventType.KEY_DOWN, this.onKeyDown, this);
         input.off(Input.EventType.KEY_UP, this.onKeyUp, this);
+        GlobalEventBus.off(GameEvent.GAME_END, this.onGameEnd, this);
+    }
+
+    onGameEnd() {
+        this.enabled = false;
     }
 
     onKeyDown(event: EventKeyboard) {

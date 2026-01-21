@@ -1,6 +1,7 @@
 import { _decorator, clamp, Component, EventTouch, Input, input } from 'cc';
 import { ObbyCharacterController } from '../ObbyCharacterController';
 import { v2_0 } from '../../General/Constants';
+import { GameEvent, GlobalEventBus } from '../../Events/GlobalEventBus';
 const { ccclass, requireComponent } = _decorator;
 
 @ccclass('CharacterTouchPullInput')
@@ -15,11 +16,17 @@ export class CharacterTouchPullInput extends Component {
     protected onEnable(): void {
         input.on(Input.EventType.TOUCH_MOVE, this.onTouchMove, this);
         input.on(Input.EventType.TOUCH_END, this.onTouchEnd, this);
+        GlobalEventBus.on(GameEvent.GAME_END, this.onGameEnd, this);
     }
 
     protected onDisable(): void {
         input.off(Input.EventType.TOUCH_MOVE, this.onTouchMove, this);
         input.off(Input.EventType.TOUCH_END, this.onTouchEnd, this);
+        GlobalEventBus.off(GameEvent.GAME_END, this.onGameEnd, this);
+    }
+
+    onGameEnd() {
+        this.enabled = false;
     }
 
     // Это реализация из примера кокоса и оставлю для возможного референса
