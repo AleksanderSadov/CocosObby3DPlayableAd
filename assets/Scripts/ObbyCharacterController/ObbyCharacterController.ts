@@ -1,7 +1,6 @@
 import {
     _decorator, Component, Node, CharacterController, Vec3, PhysicsSystem, CharacterControllerContact, geometry,
-    Camera,
-    v3
+    Camera
 } from 'cc';
 import { CustomNodeEvent } from '../Events/CustomNodeEvents';
 import { GameEvent, GlobalEventBus } from '../Events/GlobalEventBus';
@@ -12,8 +11,6 @@ const { ccclass, property } = _decorator;
 
 // За основу взят пример из документации: https://docs.cocos.com/creator/3.8/manual/en/cases-and-tutorials/ -> Examples of Physics -> case-character-controller
 // Буду модифицировать по мере необходимости
-
-// TODO Камера: камеру пока поставил по простому следовать за персонажем, надо будет реализовать свободное вращение камеры
 
 @ccclass('ObbyCharacterController')
 export class ObbyCharacterController extends Component {
@@ -112,8 +109,9 @@ export class ObbyCharacterController extends Component {
     }
 
     onCameraMovement(deltaX: number, deltaY: number) {
-        const cameraRotationY = this.mainCamera.node.eulerAngles.y;
-        this.node.setRotationFromEuler(v3(0, cameraRotationY, 0));
+        // TODO Пока не реализована свободная камера под тач джойстик, решено убрать поворот камеры
+        // const cameraRotationY = this.mainCamera.node.eulerAngles.y;
+        // this.node.setRotationFromEuler(v3(0, cameraRotationY, 0));
     }
 
     // TODO это из примера кокоса, пока не до конца понял необходимость этой логики. Например isFacingStepOver true когда персонаж упирается в большую ступеньку в примере кокоса

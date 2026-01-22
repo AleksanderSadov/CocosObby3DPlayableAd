@@ -277,30 +277,32 @@ export class UI_Joystick extends Component {
     private _degree: number = 0;
 
     onKeyDown(event: EventKeyboard) {
-        let keyCode = event.keyCode;
-        if (keyCode == KeyCode.KEY_A || keyCode == KeyCode.KEY_S || keyCode == KeyCode.KEY_D || keyCode == KeyCode.KEY_W) {
-            if (this._keys.indexOf(keyCode) == -1) {
-                this._keys.push(keyCode);
-                this.updateDirection();
-            }
-        }
-        else{
-            let btnName = this._key2buttonMap[keyCode];
-            if(btnName){
-                this._scene.emit(EasyControllerEvent.BUTTON,btnName);
-            }
-        }
+        // это я закомментировал, пока оставляю старую свою реализацию для клавы, но отсюда буду использовать тач джойстик
+
+        // let keyCode = event.keyCode;
+        // if (keyCode == KeyCode.KEY_A || keyCode == KeyCode.KEY_S || keyCode == KeyCode.KEY_D || keyCode == KeyCode.KEY_W) {
+        //     if (this._keys.indexOf(keyCode) == -1) {
+        //         this._keys.push(keyCode);
+        //         this.updateDirection();
+        //     }
+        // }
+        // else{
+        //     let btnName = this._key2buttonMap[keyCode];
+        //     if(btnName){
+        //         this._scene.emit(EasyControllerEvent.BUTTON,btnName);
+        //     }
+        // }
     }
 
     onKeyUp(event: EventKeyboard) {
-        let keyCode = event.keyCode;
-        if (keyCode == KeyCode.KEY_A || keyCode == KeyCode.KEY_S || keyCode == KeyCode.KEY_D || keyCode == KeyCode.KEY_W) {
-            let index = this._keys.indexOf(keyCode);
-            if (index != -1) {
-                this._keys.splice(index, 1);
-                this.updateDirection();
-            }
-        }
+        // let keyCode = event.keyCode;
+        // if (keyCode == KeyCode.KEY_A || keyCode == KeyCode.KEY_S || keyCode == KeyCode.KEY_D || keyCode == KeyCode.KEY_W) {
+        //     let index = this._keys.indexOf(keyCode);
+        //     if (index != -1) {
+        //         this._keys.splice(index, 1);
+        //         this.updateDirection();
+        //     }
+        // }
     }
 
     onMouseWheel(event:EventMouse){
