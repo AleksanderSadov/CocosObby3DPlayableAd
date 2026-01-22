@@ -36,19 +36,19 @@
             "_value": false
           },
           "rich-text": {
-            "_value": true
+            "_value": false
           },
           "mask": {
-            "_value": true
+            "_value": false
           },
           "graphics": {
             "_value": true
           },
           "ui-skew": {
-            "_value": true
+            "_value": false
           },
           "affine-transform": {
-            "_value": true
+            "_value": false
           },
           "ui": {
             "_value": true
@@ -98,13 +98,13 @@
             "_value": false
           },
           "intersection-2d": {
-            "_value": true
+            "_value": false
           },
           "primitive": {
-            "_value": true
+            "_value": false
           },
           "profiler": {
-            "_value": true
+            "_value": false
           },
           "occlusion-query": {
             "_value": false
@@ -116,19 +116,19 @@
             "_value": false
           },
           "particle-2d": {
-            "_value": true
+            "_value": false
           },
           "audio": {
             "_value": true
           },
           "video": {
-            "_value": true
+            "_value": false
           },
           "webview": {
             "_value": false
           },
           "tween": {
-            "_value": true
+            "_value": false
           },
           "websocket": {
             "_value": false
@@ -143,7 +143,7 @@
             "_value": false
           },
           "tiled-map": {
-            "_value": true
+            "_value": false
           },
           "vendor-google": {
             "_value": false
@@ -196,24 +196,13 @@
         "includeModules": [
           "2d",
           "3d",
-          "affine-transform",
           "audio",
           "base",
           "custom-pipeline",
           "gfx-webgl",
           "graphics",
-          "intersection-2d",
-          "mask",
-          "particle-2d",
           "physics-ammo",
-          "primitive",
-          "profiler",
-          "rich-text",
-          "tiled-map",
-          "tween",
-          "ui",
-          "ui-skew",
-          "video"
+          "ui"
         ],
         "noDeprecatedFeatures": {
           "value": false,
