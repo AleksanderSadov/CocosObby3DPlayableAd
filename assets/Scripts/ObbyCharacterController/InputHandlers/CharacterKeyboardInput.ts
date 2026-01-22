@@ -59,6 +59,7 @@ export class CharacterKeyboardInput extends CharacterAbstractInput {
             case KeyCode.SPACE:{
                 if (event.isPressed) {
                     this._occt.jump();
+                    return;
                 }
                 break;
             }
