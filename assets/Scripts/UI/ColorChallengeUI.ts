@@ -1,18 +1,19 @@
-import { _decorator, Component, Label } from 'cc';
+import { _decorator, Component, Label, Sprite } from 'cc';
 import { GlobalEventBus, GameEvent } from '../Events/GlobalEventBus';
+import { ColorChallengeMap } from '../General/Constants';
 const { ccclass, property } = _decorator;
 
 @ccclass('ColorChallengeUI')
 export class ColorChallengeUI extends Component {
     @property({ type: Label })
-    public firstLabel: Label | null = null;
+    public label: Label | null = null;
 
-    @property({ type: Label })
-    public secondLabel: Label | null = null;
+    @property({ type: Sprite })
+    public sprite: Sprite | null = null;
 
     onLoad() {
-        this.firstLabel.node.active = false;
-        this.secondLabel.node.active = false;
+        this.label.node.active = false;
+        this.sprite.node.active = false;
     }
 
     onEnable() {
@@ -29,22 +30,22 @@ export class ColorChallengeUI extends Component {
 
     private _onRoundTick(payload: any) {
         if (payload.roundTimer != undefined) {
-            this.firstLabel.string = payload.color.toUpperCase();
-            this.secondLabel.string = `${Math.max(0, Math.round(payload.roundTimer))}`;
-            this.secondLabel.node.active = this.firstLabel.node.active = true;
+            this.sprite.color = ColorChallengeMap.get(payload.color);
+            this.label.string = `${Math.max(0, Math.round(payload.roundTimer))}`;
+            this.sprite.node.active = this.label.node.active = true;
             return;
         }
 
         if (payload.waitTimer != undefined) {
-            this.firstLabel.string = `${Math.max(0, Math.round(payload.waitTimer))}`;
-            this.firstLabel.node.active = true;
-            this.secondLabel.node.active = false;
+            this.label.string = `${Math.max(0, Math.round(payload.waitTimer))}`;
+            this.label.node.active = true;
+            this.sprite.node.active = false;
             return;
         }
     }
 
     private _onStop() {
-        this.firstLabel.node.active = false;
-        this.secondLabel.node.active = false;
+        this.label.node.active = false;
+        this.sprite.node.active = false;
     }
 }

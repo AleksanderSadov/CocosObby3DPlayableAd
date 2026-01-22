@@ -9,12 +9,14 @@ export class CharacterTouchJoystickInput extends CharacterAbstractInput {
         super.onEnable();
         EasyController.on(EasyControllerEvent.MOVEMENT, this._onMovement, this);
         EasyController.on(EasyControllerEvent.MOVEMENT_STOP, this._onMovementStop, this);
+        EasyController.on(EasyControllerEvent.BUTTON, this._onButton, this);
     }
 
     protected onDisable(): void {
         super.onDisable();
         EasyController.off(EasyControllerEvent.MOVEMENT, this._onMovement, this);
         EasyController.off(EasyControllerEvent.MOVEMENT_STOP, this._onMovementStop, this);
+        EasyController.off(EasyControllerEvent.BUTTON, this._onButton, this);
     }
 
     private _onMovement(degree: number, offset: number) {
@@ -27,6 +29,13 @@ export class CharacterTouchJoystickInput extends CharacterAbstractInput {
     private _onMovementStop() {
         this._occt.control_x = 0;
         this._occt.control_z = 0;
+    }
+
+    private _onButton(btnName: string) {
+        if (btnName == 'btn_slot_0') {
+            this._occt.jump();
+            return;
+        }
     }
 }
 
