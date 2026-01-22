@@ -20,6 +20,15 @@
     1. После сборки была ошибка effect.bin' from origin 'null' has been blocked by CORS policy. Чатгпт направил в нужную сторону, проблема в Render Pipeline. Пока что этот билдер не работает с New Render Pipeline и нужно переключиться на Legacy Render Pipeline.
     1. Несмотря на пару минусов, билдер работает и достаточен для начала или референса
 
+**Feature Cropping**
+
+1. Будем идти от требования UnityAds билд не больше 5Мб
+1. Для проверки запускаю обычный web-mobile билд и в инспекторе сортирую по размеру файлов чтобы расставить приоритеты на что в первую очередь обратить внимание
+1. Сейчас не было времени в точности вести учет, пока приведу примерный расклад:
+    1. Убрать HDR скайбоксы ~1-2 Мб
+    1. Убрать анимации ~1-2 Мб
+    1. Убрать 2D физику ~200Кб
+
 **Character Controller**
 
 1. ObbyCharacterController - За основу был взят пример из документации: https://docs.cocos.com/creator/3.8/manual/en/cases-and-tutorials/ -> Examples of Physics -> case-character-controller и модифицировался по необходимости
