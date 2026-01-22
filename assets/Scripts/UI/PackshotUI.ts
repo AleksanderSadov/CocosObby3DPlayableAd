@@ -1,4 +1,4 @@
-import { _decorator, Component, Node } from 'cc';
+import { _decorator, Component, Node, sys } from 'cc';
 import { GameEvent, GlobalEventBus } from '../Events/GlobalEventBus';
 const { ccclass, property } = _decorator;
 
@@ -24,7 +24,20 @@ export class PackshotUI extends Component {
     }
 
     public downloadNow() {
-        console.log("Download Now Debug");
+        const androidLink = "https://play.google.com/store/apps/details?id=ocean.nomad.survival.simulator";
+        const iosLink = "https://apps.apple.com/us/app/raft-survival-ocean-nomad/id1326046015";
+        let link: string;
+        if (sys.platform == sys.Platform.IOS) {
+            link = iosLink;
+        } else {
+            link = androidLink;
+        }
+        // mraid не успел проверить
+        if (window.mraid) {
+            window.mraid.open(link);
+        } else {
+            window.open(link);
+        }
     }
 }
 
