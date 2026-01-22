@@ -128,7 +128,7 @@
             "_value": false
           },
           "tween": {
-            "_value": false
+            "_value": true
           },
           "websocket": {
             "_value": false
@@ -202,6 +202,7 @@
           "gfx-webgl",
           "graphics",
           "physics-ammo",
+          "tween",
           "ui"
         ],
         "noDeprecatedFeatures": {

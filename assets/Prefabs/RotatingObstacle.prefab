@@ -387,7 +387,8 @@
     "__prefab": {
       "__id__": 17
     },
-    "rotationSpeed": 90,
+    "minSpeed": 45,
+    "maxSpeed": 90,
     "rotationAxis": {
       "__type__": "cc.Vec3",
       "x": 0,
