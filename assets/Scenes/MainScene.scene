@@ -270,8 +270,8 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 23.8439998626709,
-      "z": -124.08999633789062
+      "y": 5,
+      "z": -3.805999994277954
     },
     "_lrot": {
       "__type__": "cc.Quat",
@@ -13074,7 +13074,7 @@
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 19.025,
+      "y": 19.218,
       "z": -129.419
     },
     "_lrot": {
@@ -13436,7 +13436,7 @@
     "_priority": 1073741824,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 561.25,
+    "_orthoHeight": 675.3051643192489,
     "_near": 1,
     "_far": 2000,
     "_color": {
@@ -14452,7 +14452,7 @@
         "__id__": 1014
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 1023
@@ -14587,7 +14587,7 @@
     "_string": "Game Label Example",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 24,
+    "_actualFontSize": 20,
     "_fontSize": 20,
     "_fontFamily": "Arial",
     "_lineHeight": 40,
@@ -15015,7 +15015,7 @@
     "_string": "Download now",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 24,
+    "_actualFontSize": 20,
     "_fontSize": 20,
     "_fontFamily": "Arial",
     "_lineHeight": 40,
