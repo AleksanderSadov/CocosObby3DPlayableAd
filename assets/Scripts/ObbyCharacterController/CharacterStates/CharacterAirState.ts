@@ -3,6 +3,7 @@ import { CharacterGroundedState } from './CharacterGroundedState';
 import { CharacterClingState } from './CharacterClingState';
 import { CharacterAbstractState } from './CharacterAbstractState';
 import { CustomNodeEvent } from '../../Events/CustomNodeEvents';
+import { GameEvent, GlobalEventBus } from '../../Events/GlobalEventBus';
 const { ccclass, property } = _decorator;
 
 @ccclass('CharacterAirState')
@@ -43,14 +44,14 @@ export class CharacterAirState extends CharacterAbstractState {
         this.baseGravity(deltaTime);
 
         if (this._occt._doJump) {
-            this.playJumpSound();
+            GlobalEventBus.emit(GameEvent.PLAY_SOUND, 'jump');
             this._occt._doJump = false;
             this._jumpAccelerationCountdown = this.jumpAccelerationTime;
         }
 
         // TODO можно лучше организовать эту логику с отрывом от стены, но пока так
         if (this._occt._doClingDetachJump) {
-            this.playJumpSound();
+            GlobalEventBus.emit(GameEvent.PLAY_SOUND, 'jump');
             this._occt._doClingDetachJump = false;
             this._detachJumpCountdown = this.detachJumpTime;
             this._detachPushBackCountdown = this.detachPushBackTime;
@@ -111,12 +112,5 @@ export class CharacterAirState extends CharacterAbstractState {
 
     private clingToWall() {
         this._occt.setState(CharacterClingState);
-    }
-
-    private playJumpSound() {
-        // пока ошибка в билде playable если добавлю звуки, пока не разобрался и звук убрал. Для демо можно в обычном веб билде показать
-        if (this.jumpSound) {
-            this._occt.audioSource.playOneShot(this.jumpSound);
-        }
     }
 }

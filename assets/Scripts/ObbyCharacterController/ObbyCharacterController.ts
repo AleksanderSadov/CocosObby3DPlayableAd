@@ -17,8 +17,6 @@ const { ccclass, property } = _decorator;
 export class ObbyCharacterController extends Component {
     @property(Camera)
     mainCamera: Camera;
-    @property(AudioSource)
-    public audioSource: AudioSource;
     @property
     public speed: number = 0.5;
     @property
