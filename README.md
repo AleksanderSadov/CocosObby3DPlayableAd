@@ -1,8 +1,24 @@
 # 3D Obby Playable
 
-**Physics Engine:** Bullet
+**Что осталось не сделанным**
+
+1. Свободное движение камеры - начал с не самого подходящего для этого CharacterController с фиксированной камерой, потом нашел более подходящий EasyController, но пока не успел внедрить
+
+**Character Controller**
+
+1. ObbyCharacterController - За основу был взят пример из документации: https://docs.cocos.com/creator/3.8/manual/en/cases-and-tutorials/ -> Examples of Physics -> case-character-controller и модифицировался по необходимости
+
+2. Позже увидел бесплатный EasyController с реализацией тач управления и готовой логикой и моделькой персонажа. Взял оттуда UI, но само управление быстро перенести пока не получилось и оставил пока с начатой CharacterController
+
+**Physics Engine**
 
 https://docs.cocos.com/creator/3.8/manual/en/physics/character-controller/
+https://docs.cocos.com/creator/3.8/manual/en/physics/physics-engine.html
 
-Для этого playable Obby выбран движок физики **Bullet** вместо PhysX. 
-Причины: Bullet легче и быстрее на мобильных и Web-платформах, обеспечивает стабильные столкновения и простую настройку для небольших 3D сцен с персонажем и NPC. PhysX более точный, но тяжелее и может создавать проблемы производительности на слабых устройствах.
+В приоритете легковесный движок, т.к. у playable у ad строгие ограничения по размеру файла, например до 4Мб у Unity Ads
+
+1. Cannon.js (141Kb) - легковесный, но он не поддерживает уже выбраный CapsuleCharacterController, но можно еще попробовать персонажа через rigidbody если потребуется
+
+1. Bullet (1.5Mb) - тяжелее, но подходит
+
+1. PhysX - самый точный, но и самый тяжелый
