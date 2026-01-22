@@ -1,6 +1,7 @@
 import {
     _decorator, Component, Node, CharacterController, Vec3, PhysicsSystem, CharacterControllerContact, geometry,
-    Camera
+    Camera,
+    AudioSource
 } from 'cc';
 import { CustomNodeEvent } from '../Events/CustomNodeEvents';
 import { GameEvent, GlobalEventBus } from '../Events/GlobalEventBus';
@@ -16,6 +17,8 @@ const { ccclass, property } = _decorator;
 export class ObbyCharacterController extends Component {
     @property(Camera)
     mainCamera: Camera;
+    @property(AudioSource)
+    public audioSource: AudioSource;
     @property
     public speed: number = 0.5;
     @property

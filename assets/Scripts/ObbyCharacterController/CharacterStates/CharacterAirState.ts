@@ -1,4 +1,4 @@
-import { _decorator, Vec3 } from 'cc';
+import { _decorator, AudioClip } from 'cc';
 import { CharacterGroundedState } from './CharacterGroundedState';
 import { CharacterClingState } from './CharacterClingState';
 import { CharacterAbstractState } from './CharacterAbstractState';
@@ -13,6 +13,10 @@ export class CharacterAirState extends CharacterAbstractState {
     public jumpAccelerationTime = 0.1;
     @property
     public allowMoveInAir = true;
+
+    @property(AudioClip)
+    public jumpSound: AudioClip;
+
     @property({readonly: true, visible: true, serializable: false})
     public _jumpAccelerationCountdown = 0;
 
@@ -39,12 +43,14 @@ export class CharacterAirState extends CharacterAbstractState {
         this.baseGravity(deltaTime);
 
         if (this._occt._doJump) {
+            this.playJumpSound();
             this._occt._doJump = false;
             this._jumpAccelerationCountdown = this.jumpAccelerationTime;
         }
 
         // TODO можно лучше организовать эту логику с отрывом от стены, но пока так
         if (this._occt._doClingDetachJump) {
+            this.playJumpSound();
             this._occt._doClingDetachJump = false;
             this._detachJumpCountdown = this.detachJumpTime;
             this._detachPushBackCountdown = this.detachPushBackTime;
@@ -105,5 +111,12 @@ export class CharacterAirState extends CharacterAbstractState {
 
     private clingToWall() {
         this._occt.setState(CharacterClingState);
+    }
+
+    private playJumpSound() {
+        // пока ошибка в билде playable если добавлю звуки, пока не разобрался и звук убрал. Для демо можно в обычном веб билде показать
+        if (this.jumpSound) {
+            this._occt.audioSource.playOneShot(this.jumpSound);
+        }
     }
 }
