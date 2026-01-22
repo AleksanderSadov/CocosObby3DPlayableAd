@@ -15,10 +15,10 @@ export enum ColorChallengeType {
 }
 
 export const ColorChallengeMap: Map<string, Color> = new Map([
-    ['Blue', Color.BLUE],
-    ['Green', Color.GREEN],
-    ['Purple', Color.MAGENTA],
-    ['Red', Color.RED],
-    ['White', Color.WHITE],
-    ['Yelloe', Color.YELLOW],
+    [ColorChallengeType.Blue, Color.BLUE],
+    [ColorChallengeType.Green, Color.GREEN],
+    [ColorChallengeType.Purple, Color.MAGENTA],
+    [ColorChallengeType.Red, Color.RED],
+    [ColorChallengeType.White, Color.WHITE],
+    [ColorChallengeType.Yellow, Color.YELLOW],
 ])
