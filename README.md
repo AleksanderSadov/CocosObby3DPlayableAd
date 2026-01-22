@@ -2,7 +2,7 @@
 
 **playable билд**
 
-1. последний пример сжатого билда под playable запушил в demo/[text](build/web-mobile/playable/Obby3DPlayableAd.html)
+1. последний пример сжатого билда под playable запушил в demo/Obby3DPlayableAd.html
 
 **Что осталось не сделанным**
 
