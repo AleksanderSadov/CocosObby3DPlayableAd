@@ -66,8 +66,8 @@ https://docs.cocos.com/creator/3.8/manual/en/physics/physics-engine.html
 
 В приоритете легковесный движок, т.к. у playable у ad строгие ограничения по размеру файла, например до 5Мб у Unity Ads
 
-1. Cannon.js (141Kb) - легковесный, но он не поддерживает уже выбраный CapsuleCharacterController, но можно еще попробовать персонажа через rigidbody если потребуется
+1. Cannon.js (141Kb) - легковесный, но он не поддерживает CapsuleCharacterController, BoxCharacterController, CapsuleCollider которые часто используются для персонажей. Если потребуется срезать вес и переходить на cannon, то нужно управление персонажей переделывать под BoxCollider
 
-1. **Bullet (1.5Mb) - тяжелее, но работает с CapsuleCharacterController и сейчас выбран он**
+1. **Bullet (1.5Mb) - тяжелее, но работает с CharacterController и CapsuleCollider и сейчас выбран он**
 
 1. PhysX - самый точный, но и самый тяжелый. Точно пока не находил файл и не мерял, но с PhysX playable билд на момент проверки весил на 6 Мб больше чем c bullet (13 Мб против 6 Мб)
