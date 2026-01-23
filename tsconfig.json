@@ -6,9 +6,10 @@
   "compilerOptions": {
     "strict": false,
     "lib": [
-      "es2017", // добавил чтобы заработал Object.values
-      "dom", // добавил чтобы вернуть console.log после того как добавил es2017 выше
+      "es2017", // чтобы не ругался на Object.values
+      "dom", // добавил чтобы не ругался на console.log после того как добавил es2017 выше
     ],
+    "skipLibCheck": true, // чтобы Project Diagnostics не смотрел на .d.ts, не будет смотреть на движок кокоса и node_modules: https://github.com/microsoft/vscode/issues/13953#issuecomment-1632148288  
   }
   
 }

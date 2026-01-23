@@ -12,6 +12,11 @@
 1. mraid не проверил - не успел. Проверял бы через https://play.google.com/store/apps/details?id=com.unity3d.auicreativetestapp
 1. Адаптивности интерфейса мало времени уделил - под экран подстраивается через виджеты, но не всегда красиво 
 
+**VS CODE**
+
+1. Рекомендую в настройках VS CODE включить TypeScript › Tsserver › Experimental: Enable Project Diagnostics. По умолчанию VS CODE проверяет на ошибки только открытые typescript файлы, это фича будет проверять все файлы. https://stackoverflow.com/a/60116499/31281117
+    1. Нужно открыть какой-нибудь ts файл из проекта чтобы запустить процесс проверки всего проекта
+
 **Генерация playable**
 
 1. Руководствуюсь требованиями UnityAds: https://docs.unity.com/en-us/grow/acquire/creatives/playable/specifications
