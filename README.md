@@ -17,6 +17,13 @@
 1. Рекомендую в настройках VS CODE включить TypeScript › Tsserver › Experimental: Enable Project Diagnostics. По умолчанию VS CODE проверяет на ошибки только открытые typescript файлы, это фича будет проверять все файлы. https://stackoverflow.com/a/60116499/31281117
     1. Нужно открыть какой-нибудь ts файл из проекта чтобы запустить процесс проверки всего проекта
 
+**Сторонние библиотеки и примеры**
+
+1. Для использованных библиотек код может быть изменен под нужды приложения. В процессе могли добавиться новые ошибки, для сравнения скачай и запускай оригиналы в отдельном проекте
+1. [EasyController](https://store.cocos.com/app/en/detail/4207): - логика управления персонажем + интерфейсы для тач джойстика
+1. [Playable билдер](https://store.cocos.com/app/en/detail/3754): - сборка playable формата, детали ниже в **генерация playable**
+1. [Примеры кокоса в документации](https://docs.cocos.com/creator/3.8/manual/en/cases-and-tutorials/index.html)
+
 **Генерация playable**
 
 1. Руководствуюсь требованиями UnityAds: https://docs.unity.com/en-us/grow/acquire/creatives/playable/specifications
