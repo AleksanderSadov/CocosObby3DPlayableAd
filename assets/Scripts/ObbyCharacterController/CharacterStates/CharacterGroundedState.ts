@@ -1,30 +1,64 @@
-import { _decorator, Vec3 } from 'cc';
+import { _decorator, AnimationClip, Vec3 } from 'cc';
 import { CharacterAirState } from './CharacterAirState';
 import { CharacterAbstractState } from './CharacterAbstractState';
+import { CharacterClingState } from './CharacterClingState';
 const { ccclass, property } = _decorator;
 
 @ccclass('CharacterGroundedState')
 export class CharacterGroundedState extends CharacterAbstractState {
-    updateState(deltaTime: number) {
-        this.baseGravity(deltaTime);
+    @property(AnimationClip)
+    idleAnimClip: AnimationClip;
 
-        this.baseHorizontalVelocity();
-        this.baseHorizontalDamping();
-        this.baseMove(deltaTime);
+    @property(AnimationClip)
+    moveAnimClip: AnimationClip;
 
-        if (this._occt._grounded) {
-            this._occt._playerVelocity.y = 0;
+    protected onLoad(): void {
+        super.onLoad();
+        this.initClips([this.idleAnimClip, this.moveAnimClip]);
+    }
+
+    onEnter() {
+        if (this._cm._moveInputOffset > 0) {
+            this._anim.crossFade(this.moveAnimClip.name, 0.5);
         } else {
-            this._occt.setState(CharacterAirState);
+            this._anim.crossFade(this.idleAnimClip.name, 0.5);
         }
     }
 
+    public updateState(deltaTime: number) {
+        if (!this._groundCheck.isGroundBelow) {
+            console.log("from grounded");
+            this._cm.setState(CharacterAirState);
+            return;
+        }
+
+        if (this._climbableCheck.isClimbableAhead) {
+            this._cm.setState(CharacterClingState);
+            return;
+        }
+
+        this._baseMovement();
+    }
+
+    public onMoveInput(degree: number, offset: number): void {
+        this._baseLookRotate(degree);
+        const moveAnimState = this._anim.getState(this.moveAnimClip.name);
+        if (!moveAnimState.isPlaying) {
+            this._anim.crossFade(this.moveAnimClip.name, 0.1);
+        }
+        moveAnimState.speed = offset;
+    }
+
+    public onMoveInputStop(): void {
+        this._rigidBody.setLinearVelocity(Vec3.ZERO);
+        this._anim.crossFade(this.idleAnimClip.name);
+    }
+
     public onRespawn() {
-        this._occt._playerVelocity.set(0, 0, 0);
+        // this._cm._playerVelocity.set(0, 0, 0);
     }
 
     public onJump() {
-        this._occt._doJump = true;
-        this._occt.setState(CharacterAirState);
+        this._cm.setState(CharacterAirState, {doJump: true});
     }
 }

@@ -1,24 +1,32 @@
-import { _decorator, AudioClip } from 'cc';
+import { _decorator, AnimationClip, AudioClip, ICollisionEvent } from 'cc';
 import { CharacterGroundedState } from './CharacterGroundedState';
 import { CharacterClingState } from './CharacterClingState';
 import { CharacterAbstractState } from './CharacterAbstractState';
-import { GameEvent, GlobalEventBus } from '../../Events/GlobalEventBus';
+import { v3_0 } from '../../General/Constants';
 const { ccclass, property } = _decorator;
 
 @ccclass('CharacterAirState')
 export class CharacterAirState extends CharacterAbstractState {
     @property
-    public jumpSpeed = 60;
+    jumpVelocity = 1.0;
+
     @property
-    public jumpAccelerationTime = 0.1;
-    @property
-    public allowMoveInAir = true;
+    maxJumpTimes: number = 2;
+
+    @property({readonly: true, visible: true, serializable: false})
+    private _curJumpTimes: number = 0;
+
+    @property(AnimationClip)
+    jumpBeginAnimClip: AnimationClip;
+
+    @property(AnimationClip)
+    jumpLoopAnimClip: AnimationClip;
+
+    @property(AnimationClip)
+    jumpLandAnimClip: AnimationClip;
 
     @property(AudioClip)
     public jumpSound: AudioClip;
-
-    @property({readonly: true, visible: true, serializable: false})
-    public _jumpAccelerationCountdown = 0;
 
     @property
     public detachJumpSpeed = 60;
@@ -34,82 +42,97 @@ export class CharacterAirState extends CharacterAbstractState {
     @property({readonly: true, visible: true, serializable: false})
     public _detachPushBackCountdown = 0;
 
-    public onEnter(prevState?: CharacterAbstractState): void {
-        this.resetCountdowns();
-        // this.node.on(CustomNodeEvent.CLIMBABLE_WALL_ENTER, this.clingToWall, this);
+    protected onLoad(): void {
+        super.onLoad();
+        this.initClips([this.jumpBeginAnimClip, this.jumpLoopAnimClip, this.jumpLandAnimClip]);
+    }
+
+    public onEnter(prevState?: CharacterAbstractState, payload?: any): void {
+        this._anim.crossFade(this.jumpBeginAnimClip.name);
+
+        if (payload?.doJump) {
+            this._jump();
+        }
+        
+        // this.resetCountdowns();
     }
 
     updateState(deltaTime: number) {
-        this.baseGravity(deltaTime);
-
-        if (this._occt._doJump) {
-            GlobalEventBus.emit(GameEvent.PLAY_SOUND, 'jump');
-            this._occt._doJump = false;
-            this._jumpAccelerationCountdown = this.jumpAccelerationTime;
-        }
-
-        // TODO можно лучше организовать эту логику с отрывом от стены, но пока так
-        if (this._occt._doClingDetachJump) {
-            GlobalEventBus.emit(GameEvent.PLAY_SOUND, 'jump');
-            this._occt._doClingDetachJump = false;
-            this._detachJumpCountdown = this.detachJumpTime;
-            this._detachPushBackCountdown = this.detachPushBackTime;
-        }
-
-        if (this._jumpAccelerationCountdown > 0) {
-            this._jumpAccelerationCountdown = Math.max(this._jumpAccelerationCountdown - deltaTime, 0);
-            this._occt._playerVelocity.y += this.jumpSpeed * deltaTime;
-        }
-
-        if (this._detachJumpCountdown > 0) {
-            this._detachJumpCountdown = Math.max(this._detachJumpCountdown - deltaTime, 0);
-            this._occt._playerVelocity.y += this.detachJumpSpeed * deltaTime;
-        }
-
-        if (this._detachPushBackCountdown > 0) {
-            this._detachPushBackCountdown = Math.max(this._detachPushBackCountdown - deltaTime, 0);
-            // TODO пока достаточно отталкиваться просто по оси Z относительно мира, но можно сделать по нормали стены
-            this._occt._playerVelocity.z += this.detachPushBackSpeed * deltaTime;
-            if (!this.allowMoveInAir) {
-                this._occt._playerVelocity.x *= this._occt.linearDamping;
-                this._occt._playerVelocity.z *= this._occt.linearDamping;
-            }
-        }
-
-        if (this.allowMoveInAir) {
-            this.baseHorizontalVelocity();
-            this.baseHorizontalDamping();
-        }
-
-        this.baseMove(deltaTime);
-
-        if (this._occt._grounded) {
-            this._occt.setState(CharacterGroundedState);
+        if (this._groundCheck.isGroundBelow) {
+            this._onLand();
+            console.log("onLand");
             return;
         }
+
+        if (this._climbableCheck.isClimbableAhead) {
+            this._cm.setState(CharacterClingState);
+            return;
+        }
+
+        // гравитация расчитывается сама через rigidbody
+        this._baseMovement();
+        const state = this._anim.getState(this.jumpBeginAnimClip.name);
+        if (state.isPlaying && state.current >= state.duration) {
+            this._anim.crossFade(this.jumpLoopAnimClip.name);
+        }
+    }
+
+    public onMoveInput(degree: number, offset: number): void {
+        this._baseLookRotate(degree);
     }
 
     public onExit(nextState?: CharacterAbstractState): void {
         this.resetFlags();
         this.resetCountdowns();
-        // this.node.off(CustomNodeEvent.CLIMBABLE_WALL_ENTER, this.clingToWall, this);
     }
 
     public onRespawn() {
-        this._occt._playerVelocity.set(0, 0, 0);
+        // this._occt._playerVelocity.set(0, 0, 0);
         this.resetFlags();
         this.resetCountdowns();
     }
 
     private resetFlags() {
-        this._occt._doJump = this._occt._doClingDetachJump = false;
+        this._curJumpTimes = 0;
+        // this._occt._doJump = this._occt._doClingDetachJump = false;
     }
 
     private resetCountdowns() {
-        this._jumpAccelerationCountdown = this._detachJumpCountdown = this._detachPushBackCountdown = 0;
+        // this._jumpAccelerationCountdown = this._detachJumpCountdown = this._detachPushBackCountdown = 0;
     }
 
-    private clingToWall() {
-        this._occt.setState(CharacterClingState);
+    public onCollisionEnter(event: ICollisionEvent): void {
+        // TODO Как-то пока слишком просто без проверок как соприкоснулись
+        // if (event.otherCollider != event.selfCollider) {
+        //     this._onLand();
+        // }
+    }
+
+    public onJump() {
+        this._jump();
+    }
+
+    private _jump() {
+        if (this._curJumpTimes >= this.maxJumpTimes) {
+            return;
+        }
+
+        this._curJumpTimes++;
+        const newVelocity = v3_0;
+        this._rigidBody.getLinearVelocity(newVelocity);
+        newVelocity.y = this.jumpVelocity;
+        this._rigidBody.setLinearVelocity(newVelocity);
+
+        const jumpBeginState = this._anim.getState(this.jumpBeginAnimClip.name);
+        const jumpLoopState = this._anim.getState(this.jumpLoopAnimClip.name);
+        if (jumpBeginState.current || jumpLoopState.current) {
+            return;
+        }
+        this._anim.crossFade(this.jumpBeginAnimClip.name);
+    }
+
+    private _onLand() {
+        this._anim.crossFade(this.jumpLandAnimClip.name);
+        this._cm.setState(CharacterGroundedState);
     }
 }
