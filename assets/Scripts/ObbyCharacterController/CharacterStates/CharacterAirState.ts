@@ -2,7 +2,6 @@ import { _decorator, AudioClip } from 'cc';
 import { CharacterGroundedState } from './CharacterGroundedState';
 import { CharacterClingState } from './CharacterClingState';
 import { CharacterAbstractState } from './CharacterAbstractState';
-import { CustomNodeEvent } from '../../Events/CustomNodeEvents';
 import { GameEvent, GlobalEventBus } from '../../Events/GlobalEventBus';
 const { ccclass, property } = _decorator;
 
@@ -37,7 +36,7 @@ export class CharacterAirState extends CharacterAbstractState {
 
     public onEnter(prevState?: CharacterAbstractState): void {
         this.resetCountdowns();
-        this.node.on(CustomNodeEvent.CLIMBABLE_WALL_ENTER, this.clingToWall, this);
+        // this.node.on(CustomNodeEvent.CLIMBABLE_WALL_ENTER, this.clingToWall, this);
     }
 
     updateState(deltaTime: number) {
@@ -93,7 +92,7 @@ export class CharacterAirState extends CharacterAbstractState {
     public onExit(nextState?: CharacterAbstractState): void {
         this.resetFlags();
         this.resetCountdowns();
-        this.node.off(CustomNodeEvent.CLIMBABLE_WALL_ENTER, this.clingToWall, this);
+        // this.node.off(CustomNodeEvent.CLIMBABLE_WALL_ENTER, this.clingToWall, this);
     }
 
     public onRespawn() {

@@ -1,7 +1,6 @@
 import { _decorator, Vec3 } from 'cc';
 import { CharacterAbstractState } from './CharacterAbstractState';
 import { CharacterAirState } from './CharacterAirState';
-import { CustomNodeEvent } from '../../Events/CustomNodeEvents';
 const { ccclass, property } = _decorator;
 
 @ccclass('CharacterClingState')
@@ -13,7 +12,7 @@ export class CharacterClingState extends CharacterAbstractState {
         this._occt._playerVelocity.x = 0;
         this._occt._playerVelocity.z = 0;
         this._occt._playerVelocity.y = 0;
-        this.node.on(CustomNodeEvent.CLIMBABLE_WALL_EXIT, this.detach, this);
+        // this.node.on(CustomNodeEvent.CLIMBABLE_WALL_EXIT, this.detach, this);
     }
 
     updateState(deltaTime: number) {
@@ -26,7 +25,7 @@ export class CharacterClingState extends CharacterAbstractState {
     }
 
     public onExit(nextState?: CharacterAbstractState): void {
-        this.node.off(CustomNodeEvent.CLIMBABLE_WALL_EXIT, this.detach, this);
+        // this.node.off(CustomNodeEvent.CLIMBABLE_WALL_EXIT, this.detach, this);
     }
 
     public onRespawn() {

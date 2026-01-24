@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Vec3, v3 } from 'cc';
+import { _decorator, Component, Node, Vec3, v3, Camera } from 'cc';
 import { EasyController, EasyControllerEvent } from './EasyController';
 const { ccclass, property } = _decorator;
 
@@ -35,6 +35,12 @@ export class ThirdPersonCamera extends Component {
 
     private _targetLen: number = 0;
     private _targetAngles: Vec3 = v3();
+    private _camera: Camera;
+
+    onLoad() {
+        this._camera = this.getComponent(Camera);
+        this._camera.camera.initGeometryRenderer();
+    }
 
 
     start() {

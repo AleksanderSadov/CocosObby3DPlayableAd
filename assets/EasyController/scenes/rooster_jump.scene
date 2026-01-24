@@ -102,7 +102,7 @@
     },
     "autoReleaseAssets": false,
     "_globals": {
-      "__id__": 162
+      "__id__": 164
     },
     "_id": "0d6c75ac-8171-4aaa-a146-3d530a2632f9"
   },
@@ -464,6 +464,8 @@
       "__uuid__": "c657cafb-170c-45b7-ba51-ac61469db43f@35302",
       "__expectedType__": "cc.AnimationClip"
     },
+    "_anim": null,
+    "climbSpeed": 5,
     "_id": "e2yBr7g2FMoIFfrLxt2/sV"
   },
   {
@@ -2556,7 +2558,7 @@
     "_priority": 1073741824,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 451.6666666666667,
+    "_orthoHeight": 635.9937402190924,
     "_near": 1,
     "_far": 2000,
     "_color": {
@@ -3151,6 +3153,29 @@
     "_isUnderline": false,
     "_underlineHeight": 2,
     "_cacheMode": 0,
+    "_enableOutline": false,
+    "_outlineColor": {
+      "__type__": "cc.Color",
+      "r": 0,
+      "g": 0,
+      "b": 0,
+      "a": 255
+    },
+    "_outlineWidth": 2,
+    "_enableShadow": false,
+    "_shadowColor": {
+      "__type__": "cc.Color",
+      "r": 0,
+      "g": 0,
+      "b": 0,
+      "a": 255
+    },
+    "_shadowOffset": {
+      "__type__": "cc.Vec2",
+      "x": 2,
+      "y": 2
+    },
+    "_shadowBlur": 2,
     "_id": "fe8OuMyl5N453Iy5vwdETZ"
   },
   {
@@ -3487,6 +3512,29 @@
     "_isUnderline": false,
     "_underlineHeight": 2,
     "_cacheMode": 0,
+    "_enableOutline": false,
+    "_outlineColor": {
+      "__type__": "cc.Color",
+      "r": 0,
+      "g": 0,
+      "b": 0,
+      "a": 255
+    },
+    "_outlineWidth": 2,
+    "_enableShadow": false,
+    "_shadowColor": {
+      "__type__": "cc.Color",
+      "r": 0,
+      "g": 0,
+      "b": 0,
+      "a": 255
+    },
+    "_shadowOffset": {
+      "__type__": "cc.Vec2",
+      "x": 2,
+      "y": 2
+    },
+    "_shadowBlur": 2,
     "_id": "37k4AeuC5F3aD4QUiDyKJR"
   },
   {
@@ -3823,6 +3871,29 @@
     "_isUnderline": false,
     "_underlineHeight": 2,
     "_cacheMode": 0,
+    "_enableOutline": false,
+    "_outlineColor": {
+      "__type__": "cc.Color",
+      "r": 0,
+      "g": 0,
+      "b": 0,
+      "a": 255
+    },
+    "_outlineWidth": 2,
+    "_enableShadow": false,
+    "_shadowColor": {
+      "__type__": "cc.Color",
+      "r": 0,
+      "g": 0,
+      "b": 0,
+      "a": 255
+    },
+    "_shadowOffset": {
+      "__type__": "cc.Vec2",
+      "x": 2,
+      "y": 2
+    },
+    "_shadowBlur": 2,
     "_id": "94V5fBW8hNUo1cES6qKnNk"
   },
   {
@@ -4143,7 +4214,11 @@
     "asset": null,
     "fileId": "f46876e4-e81b-4931-b493-6d367be385e7",
     "instance": null,
-    "targetOverrides": null,
+    "targetOverrides": [
+      {
+        "__id__": 162
+      }
+    ],
     "nestedPrefabInstanceRoots": [
       {
         "__id__": 8
@@ -4154,27 +4229,52 @@
     ]
   },
   {
+    "__type__": "cc.TargetOverrideInfo",
+    "source": {
+      "__id__": 13
+    },
+    "sourceInfo": null,
+    "propertyPath": [
+      "_anim"
+    ],
+    "target": {
+      "__id__": 8
+    },
+    "targetInfo": {
+      "__id__": 163
+    }
+  },
+  {
+    "__type__": "cc.TargetInfo",
+    "localID": [
+      "785KrFqJxasqzQSuEUWIi/"
+    ]
+  },
+  {
     "__type__": "cc.SceneGlobals",
     "ambient": {
-      "__id__": 163
-    },
-    "shadows": {
-      "__id__": 164
-    },
-    "_skybox": {
       "__id__": 165
     },
-    "fog": {
+    "shadows": {
       "__id__": 166
     },
-    "octree": {
+    "_skybox": {
       "__id__": 167
     },
-    "skin": {
+    "fog": {
       "__id__": 168
     },
-    "lightProbeInfo": {
+    "octree": {
       "__id__": 169
+    },
+    "skin": {
+      "__id__": 170
+    },
+    "lightProbeInfo": {
+      "__id__": 171
+    },
+    "postSettings": {
+      "__id__": 172
     },
     "bakedWithStationaryMainLight": false,
     "bakedWithHighpLightmap": false
@@ -4238,6 +4338,7 @@
       "z": 0
     },
     "_distance": 0.01,
+    "_planeBias": 1,
     "_shadowColor": {
       "__type__": "cc.Color",
       "r": 76,
@@ -4267,6 +4368,8 @@
       "__uuid__": "6f01cf7f-81bf-4a7e-bd5d-0afc19696480@b47c0",
       "__expectedType__": "cc.TextureCube"
     },
+    "_diffuseMapHDR": null,
+    "_diffuseMapLDR": null,
     "_enabled": true,
     "_useHDR": true,
     "_editableMaterial": null,
@@ -4333,5 +4436,9 @@
     "_showConvex": false,
     "_data": null,
     "_lightProbeSphereVolume": 1
+  },
+  {
+    "__type__": "cc.PostSettingsInfo",
+    "_toneMappingType": 0
   }
 ]
