@@ -27,7 +27,6 @@ export class CharacterGroundedState extends CharacterAbstractState {
 
     public updateState(deltaTime: number) {
         if (!this._groundCheck.isGroundBelow) {
-            console.log("from grounded");
             this._cm.setState(CharacterAirState);
             return;
         }

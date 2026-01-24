@@ -60,7 +60,6 @@ export class CharacterAirState extends CharacterAbstractState {
     updateState(deltaTime: number) {
         if (this._groundCheck.isGroundBelow) {
             this._onLand();
-            console.log("onLand");
             return;
         }
 
