@@ -7,7 +7,7 @@ import { CharacterInputProcessor } from '../../Scripts/ObbyCharacterController/C
 import { GameEvent, GlobalEventBus } from '../../Scripts/Events/GlobalEventBus';
 const { ccclass, property } = _decorator;
 
-// Это на основе EasyController плагина, но модифицировал (добавил карабканье, groundCheck и тд) и зарефакторил (стейт машин и разделение логики) для лучшей читаемости
+// Это на основе EasyController плагина, но модифицировал (добавил карабканье, проверку земли, правку застревания в стене в прыжке из-за трения и др) и зарефакторил (стейт машин и разделение логики) для лучшей читаемости
 @ccclass('CharacterMovement')
 export class CharacterMovement extends Component {
     @property(Camera)
@@ -26,6 +26,8 @@ export class CharacterMovement extends Component {
     }
     @property({readonly: true, visible: true, serializable: false})
     private _velocity: Vec3 = new Vec3();
+    @property({readonly: true, visible: true, serializable: false})
+    private _angularVelocity: Vec3 = new Vec3();
 
     @property
     private get editorRespawn() { return false }
@@ -90,6 +92,7 @@ export class CharacterMovement extends Component {
         this._climbableCheck.updateState(deltaTime);
         this._currentState.updateState(deltaTime);
         this._rb.getLinearVelocity(this._velocity);
+        this._rb.getAngularVelocity(this._angularVelocity);
     }
 
     onMoveInput(degree: number, offset: number) {
@@ -108,6 +111,7 @@ export class CharacterMovement extends Component {
     }
 
     private _respawn() {
+        this._rb.setLinearVelocity(Vec3.ZERO);
         GlobalEventBus.emit(GameEvent.REQUEST_RESPAWN, {node: this.node, defaultSpawn: this._initialSpawn});
     }
 }

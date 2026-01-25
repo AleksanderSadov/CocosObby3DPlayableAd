@@ -19,6 +19,10 @@ export class ClimbableCheck extends Component {
     public dotProductCheck = 0.2;
     @property({tooltip: "Время сколько не прилипать снова к стене, если недавно отпрыгнули"})
     public clingCooldown = 0.2;
+    @property({tooltip: "Разрешать ли карабкаться. Отключать не планируется, но оставляю удобный переключатель для тестирования"})
+    public allowClimb = true;
+    @property({tooltip: "Применять ли фикс для правки застревания в стенах в прыжке (смотри код). Отключать не планируется, но оставляю удобный переключатель для тестирования"})
+    public fixStuckInWall = true;
 
     @property
     public showRayCastLine: boolean = false;
@@ -98,7 +102,7 @@ export class ClimbableCheck extends Component {
         this.hitDotProduct = hitDotProduct;
         this.isClimbableAhead = isClimbableAhead;
         this.isClingOnCooldown = this._clingTimer > 0;
-        this.canClimb = this.isClimbableAhead && !this.isClingOnCooldown;
+        this.canClimb = this.allowClimb && this.isClimbableAhead && !this.isClingOnCooldown;
         return this.canClimb;
     }
 

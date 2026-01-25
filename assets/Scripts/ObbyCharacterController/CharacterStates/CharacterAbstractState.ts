@@ -1,6 +1,6 @@
-import { _decorator, AnimationClip, Component, ICollisionEvent, RigidBody, SkeletalAnimation } from 'cc';
+import { _decorator, AnimationClip, Component, ICollisionEvent, RigidBody, SkeletalAnimation, Vec3 } from 'cc';
 import { CharacterMovement } from 'db://assets/EasyController/kylins_easy_controller/CharacterMovement';
-import { v3_0, v3_1 } from '../../General/Constants';
+import { v3_0, v3_1, v3_2 } from '../../General/Constants';
 import { GroundCheck } from '../GroundCheck';
 import { ClimbableCheck } from '../ClimbableCheck';
 import { CharacterInputProcessor } from '../CharacterInputProcessor';
@@ -43,6 +43,21 @@ export abstract class CharacterAbstractState extends Component {
         newVelocity.set(this.node.forward);
         newVelocity.multiplyScalar(this._cm.maxVelocity * this._input.offset);
         newVelocity.y = currentVelocity.y;
+
+        // Проблема: Если персонаж прыгнул в стену, то когда задаем скорость по направлению к стене тогда персонаж застревал в стене из за трения
+        // У персонажа friction = 0, но этого недостаточно, т.к. учитывается и friction объектов. Уже видно, что мы не скользим по полу, а учитывается friction пола
+        // Сделать все скользким не подходит, т.к. будем скользить по полу. Сделать все стены скользкими тоже неудобно т.к. придется за этим следить
+        // Решение: Убирать скорость в направлении стены
+        // Пока удобно переиспользовать проверку на стены через climbableCheck
+        if (this._climbableCheck.fixStuckInWall && this._climbableCheck.hitNode) {
+            const wallHitNormal = this._climbableCheck.hitNormal;
+            const pushTowardWall = Vec3.dot(newVelocity, wallHitNormal);
+            if (pushTowardWall < 0) {
+                const correction = v3_2;
+                correction.set(wallHitNormal.multiplyScalar(pushTowardWall));
+                newVelocity.subtract(correction);
+            }
+        }
         this._rb.setLinearVelocity(newVelocity);
     }
 
