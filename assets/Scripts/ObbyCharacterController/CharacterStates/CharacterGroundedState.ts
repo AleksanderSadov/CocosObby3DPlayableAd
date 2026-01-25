@@ -18,7 +18,7 @@ export class CharacterGroundedState extends CharacterAbstractState {
     }
 
     onEnter() {
-        if (this._cm._moveInputOffset > 0) {
+        if (this._input.offset > 0) {
             this._anim.crossFade(this.moveAnimClip.name, 0.5);
         } else {
             this._anim.crossFade(this.idleAnimClip.name, 0.5);

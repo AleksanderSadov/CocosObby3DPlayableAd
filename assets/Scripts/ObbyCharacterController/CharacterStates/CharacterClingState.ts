@@ -42,8 +42,8 @@ export class CharacterClingState extends CharacterAbstractState {
             return;
         }
 
-        const vertical = this._cm._moveInputSinus * this.climbSpeed * deltaTime;
-        const horizontal = this._cm._moveInputCosinus * this.climbSpeed * deltaTime;
+        const vertical = this._input.sin * this.climbSpeed * deltaTime;
+        const horizontal = this._input.cos * this.climbSpeed * deltaTime;
         const localClimb = v3_0.set(horizontal, vertical, 0);
         const worldClimb = v3_1.set();
         Vec3.transformQuat(worldClimb, localClimb, this.node.worldRotation);

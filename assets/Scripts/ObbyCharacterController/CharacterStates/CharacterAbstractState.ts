@@ -3,6 +3,7 @@ import { CharacterMovement } from 'db://assets/EasyController/kylins_easy_contro
 import { v3_0, v3_1 } from '../../General/Constants';
 import { GroundCheck } from '../GroundCheck';
 import { ClimbableCheck } from '../ClimbableCheck';
+import { CharacterInputProcessor } from '../CharacterInputProcessor';
 const { ccclass } = _decorator;
 
 @ccclass('CharacterAbstractState')
@@ -10,6 +11,7 @@ export abstract class CharacterAbstractState extends Component {
     protected _cm: CharacterMovement;
     protected _rigidBody: RigidBody;
     protected _anim: SkeletalAnimation;
+    protected _input: CharacterInputProcessor;
     protected _groundCheck: GroundCheck;
     protected _climbableCheck: ClimbableCheck;
 
@@ -17,6 +19,7 @@ export abstract class CharacterAbstractState extends Component {
         this._cm = this.getComponent(CharacterMovement);
         this._rigidBody = this.getComponent(RigidBody);
         this._anim = this._cm.anim;
+        this._input = this.getComponent(CharacterInputProcessor);
         this._groundCheck = this.getComponent(GroundCheck);
         this._climbableCheck = this.getComponent(ClimbableCheck);
     }
@@ -31,14 +34,14 @@ export abstract class CharacterAbstractState extends Component {
     public onRespawn(): void {}
 
     protected _baseMovement() {
-        if (this._cm._moveInputOffset <= 0) {
+        if (this._input.offset <= 0) {
             return;
         }
         const currentVelocity = v3_0;
         this._rigidBody.getLinearVelocity(currentVelocity);
         const newVelocity = v3_1;
         newVelocity.set(this.node.forward);
-        newVelocity.multiplyScalar(this._cm.maxVelocity * this._cm._moveInputOffset);
+        newVelocity.multiplyScalar(this._cm.maxVelocity * this._input.offset);
         newVelocity.y = currentVelocity.y;
         this._rigidBody.setLinearVelocity(newVelocity);
     }
