@@ -4,6 +4,7 @@ import { CharacterAirState } from '../../Scripts/ObbyCharacterController/Charact
 import { GroundCheck } from '../../Scripts/ObbyCharacterController/GroundCheck';
 import { ClimbableCheck } from '../../Scripts/ObbyCharacterController/ClimbableCheck';
 import { CharacterInputProcessor } from '../../Scripts/ObbyCharacterController/CharacterInputProcessor';
+import { GameEvent, GlobalEventBus } from '../../Scripts/Events/GlobalEventBus';
 const { ccclass, property } = _decorator;
 
 // Это на основе EasyController плагина, но модифицировал (добавил карабканье, groundCheck и тд) и зарефакторил (стейт машин и разделение логики) для лучшей читаемости
@@ -26,13 +27,19 @@ export class CharacterMovement extends Component {
     @property({readonly: true, visible: true, serializable: false})
     private _velocity: Vec3 = new Vec3();
 
+    @property
+    private get editorRespawn() { return false }
+    private set editorRespawn(value) { this._respawn() }
+
     private _rb: RigidBody;
     private _collider: CapsuleCollider;
     private _inputProcessor: CharacterInputProcessor;
     private _groundCheck: GroundCheck;
     private _climbableCheck: ClimbableCheck;
+    private _initialSpawn = new Vec3();
 
     protected onLoad(): void {
+        this._initialSpawn.set(this.node.worldPosition);
         if (!this.mainCamera) {
             this.mainCamera = find('Main Camera')?.getComponent(Camera);
         }
@@ -98,6 +105,10 @@ export class CharacterMovement extends Component {
             this._currentState.onJump();
             return;
         }
+    }
+
+    private _respawn() {
+        GlobalEventBus.emit(GameEvent.REQUEST_RESPAWN, {node: this.node, defaultSpawn: this._initialSpawn});
     }
 }
 
