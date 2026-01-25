@@ -61,10 +61,12 @@ export class CharacterClingState extends CharacterAbstractState {
     public onMoveInput(degree: number, offset: number): void {
         // this._baseLookRotate(degree); // персонажа специально не поворачиваем чтобы смотрел только в стену
         const moveAnimState = this._anim.getState(this.moveAnimClip.name);
-        if (!moveAnimState.isPlaying) {
-            this._anim.crossFade(this.moveAnimClip.name, 0.1);
-        }
+        this._anim.crossFade(this.moveAnimClip.name, 0.1);
         moveAnimState.speed = offset;
+    }
+
+    public onMoveInputStop(): void {
+        this._anim.crossFade(this.idleAnimClip.name);
     }
 
     public onExit(nextState?: CharacterAbstractState): void {

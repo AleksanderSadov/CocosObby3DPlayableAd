@@ -42,9 +42,7 @@ export class CharacterGroundedState extends CharacterAbstractState {
     public onMoveInput(degree: number, offset: number): void {
         this._baseLookRotate(degree);
         const moveAnimState = this._anim.getState(this.moveAnimClip.name);
-        if (!moveAnimState.isPlaying) {
-            this._anim.crossFade(this.moveAnimClip.name, 0.1);
-        }
+        this._anim.crossFade(this.moveAnimClip.name, 0.1);
         moveAnimState.speed = offset;
     }
 
