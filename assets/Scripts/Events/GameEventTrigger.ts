@@ -14,14 +14,14 @@ export class GameEventTrigger extends Component {
     }
 
     protected onEnable(): void {
-        this._trigger.on('onControllerTriggerEnter', this.onControllerTriggerEnter, this);
+        this._trigger.on('onTriggerEnter', this.onTriggerEnter, this);
     }
 
     protected onDisable(): void {
-        this._trigger.off('onControllerTriggerEnter', this.onControllerTriggerEnter, this);
+        this._trigger.off('onTriggerEnter', this.onTriggerEnter, this);
     }
 
-    onControllerTriggerEnter(event: any) {
+    onTriggerEnter(event: any) {
         GlobalEventBus.emit(this.gameEvent);
     }
 }
