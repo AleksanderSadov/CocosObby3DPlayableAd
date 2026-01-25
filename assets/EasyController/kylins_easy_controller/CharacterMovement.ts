@@ -1,4 +1,4 @@
-import { _decorator, Component, RigidBody, find, Camera, SkeletalAnimation, ICollisionEvent, CapsuleCollider } from 'cc';
+import { _decorator, Component, RigidBody, find, Camera, SkeletalAnimation, ICollisionEvent, CapsuleCollider, Vec3 } from 'cc';
 import { CharacterAbstractState } from '../../Scripts/ObbyCharacterController/CharacterStates/CharacterAbstractState';
 import { CharacterAirState } from '../../Scripts/ObbyCharacterController/CharacterStates/CharacterAirState';
 import { GroundCheck } from '../../Scripts/ObbyCharacterController/GroundCheck';
@@ -23,6 +23,8 @@ export class CharacterMovement extends Component {
     private get _currentStateName(): string {
         return this._currentState?.constructor?.name ?? 'None';
     }
+    @property({readonly: true, visible: true, serializable: false})
+    private _velocity: Vec3 = new Vec3();
 
     private _rb: RigidBody;
     private _collider: CapsuleCollider;
@@ -78,8 +80,9 @@ export class CharacterMovement extends Component {
     update(deltaTime: number) {
         // deltaTime = PhysicsSystem.instance.fixedTimeStep; // TODO: Использовать ли fixedTimeStep?
         this._groundCheck.check();
-        this._climbableCheck.check();
+        this._climbableCheck.updateState(deltaTime);
         this._currentState.updateState(deltaTime);
+        this._rb.getLinearVelocity(this._velocity);
     }
 
     onMoveInput(degree: number, offset: number) {

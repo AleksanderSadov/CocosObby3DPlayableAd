@@ -26,6 +26,7 @@ export class GroundCheck extends Component {
         this._rb = this.getComponent(RigidBody);
     }
 
+    // пока привязан к компоненту, но можно вынести в чистую функцию, если потребуется, просто сейчас удобно и так и не усложняю
     public check(): boolean {
         const origin = this.node.worldPosition;
         const down = v3_0.set(0, -1, 0);

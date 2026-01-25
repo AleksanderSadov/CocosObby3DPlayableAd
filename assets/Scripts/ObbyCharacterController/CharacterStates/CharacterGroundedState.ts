@@ -31,7 +31,7 @@ export class CharacterGroundedState extends CharacterAbstractState {
             return;
         }
 
-        if (this._climbableCheck.isClimbableAhead) {
+        if (this._climbableCheck.canClimb) {
             this._cm.setState(CharacterClingState);
             return;
         }
@@ -49,7 +49,7 @@ export class CharacterGroundedState extends CharacterAbstractState {
     }
 
     public onMoveInputStop(): void {
-        this._rigidBody.setLinearVelocity(Vec3.ZERO);
+        this._rb.setLinearVelocity(Vec3.ZERO);
         this._anim.crossFade(this.idleAnimClip.name);
     }
 

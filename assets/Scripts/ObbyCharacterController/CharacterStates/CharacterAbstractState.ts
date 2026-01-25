@@ -9,7 +9,7 @@ const { ccclass } = _decorator;
 @ccclass('CharacterAbstractState')
 export abstract class CharacterAbstractState extends Component {
     protected _cm: CharacterMovement;
-    protected _rigidBody: RigidBody;
+    protected _rb: RigidBody;
     protected _anim: SkeletalAnimation;
     protected _input: CharacterInputProcessor;
     protected _groundCheck: GroundCheck;
@@ -17,7 +17,7 @@ export abstract class CharacterAbstractState extends Component {
 
     protected onLoad(): void {
         this._cm = this.getComponent(CharacterMovement);
-        this._rigidBody = this.getComponent(RigidBody);
+        this._rb = this.getComponent(RigidBody);
         this._anim = this._cm.anim;
         this._input = this.getComponent(CharacterInputProcessor);
         this._groundCheck = this.getComponent(GroundCheck);
@@ -38,12 +38,12 @@ export abstract class CharacterAbstractState extends Component {
             return;
         }
         const currentVelocity = v3_0;
-        this._rigidBody.getLinearVelocity(currentVelocity);
+        this._rb.getLinearVelocity(currentVelocity);
         const newVelocity = v3_1;
         newVelocity.set(this.node.forward);
         newVelocity.multiplyScalar(this._cm.maxVelocity * this._input.offset);
         newVelocity.y = currentVelocity.y;
-        this._rigidBody.setLinearVelocity(newVelocity);
+        this._rb.setLinearVelocity(newVelocity);
     }
 
     protected _baseLookRotate(degree: number) {

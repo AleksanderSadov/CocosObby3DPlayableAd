@@ -17,6 +17,8 @@ export class ClimbableCheck extends Component {
     public rayCastMaxDistance: number = 0.1;
     @property({tooltip: "Насколько перпендикулярна должна быть стена"})
     public dotProductCheck = 0.2;
+    @property({tooltip: "Время сколько не прилипать снова к стене, если недавно отпрыгнули"})
+    public clingCooldown = 0.2;
 
     @property
     public showRayCastLine: boolean = false;
@@ -25,6 +27,10 @@ export class ClimbableCheck extends Component {
     public isClimbing = false;
     @property({readonly: true, serializable: false})
     public isClimbableAhead: boolean = false;
+    @property({readonly: true, serializable: false})
+    public isClingOnCooldown: boolean = false;
+    @property({readonly: true, serializable: false})
+    public canClimb: boolean = false;
     @property({type: Node, readonly: true, serializable: false})
     public hitNode: Node = null;
     @property({readonly: true, serializable: false})
@@ -34,6 +40,17 @@ export class ClimbableCheck extends Component {
     @property({readonly: true, serializable: false})
     public hitDotProduct = 0;
 
+    @property({readonly: true, visible: true, serializable: false})
+    private _clingTimer = 0;
+
+    public updateState(dt: number) {
+        if (this._clingTimer > 0) {
+            this._clingTimer -= dt;
+        }
+        this.check();
+    }
+
+    // пока привязан к компоненту, но можно вынести в чистую функцию, если потребуется, просто сейчас удобно и так и не усложняю
     public check(): boolean {
         const position = this.node.worldPosition; // сейчас у персонажа это точка соприкосновения с полом
         const dir = this.node.forward;
@@ -80,7 +97,17 @@ export class ClimbableCheck extends Component {
         this.hitHasClimbable = hitHasClimbable;
         this.hitDotProduct = hitDotProduct;
         this.isClimbableAhead = isClimbableAhead;
-        return this.isClimbableAhead;
+        this.isClingOnCooldown = this._clingTimer > 0;
+        this.canClimb = this.isClimbableAhead && !this.isClingOnCooldown;
+        return this.canClimb;
+    }
+
+    public startClingCooldown() {
+        this._clingTimer = this.clingCooldown;
+    }
+
+    public stopClingCooldown() {
+        this._clingTimer = 0;
     }
 }
 

@@ -24,9 +24,9 @@ export class CharacterClingState extends CharacterAbstractState {
     onEnter(prev?: CharacterAbstractState, payload?: any) {
         this._climbableCheck.isClimbing = true;
 
-        this._rigidBody.useGravity = false;
-        this._rigidBody.setLinearVelocity(Vec3.ZERO);
-        this._rigidBody.enabled = false;
+        this._rb.useGravity = false;
+        this._rb.setLinearVelocity(Vec3.ZERO);
+        this._rb.enabled = false;
 
         const hitNormal = this._climbableCheck.hitNormal;
         const wallForward = v3_0.set(hitNormal).multiplyScalar(1);
@@ -37,7 +37,7 @@ export class CharacterClingState extends CharacterAbstractState {
     }
 
     updateState(deltaTime: number) {
-        if (!this._climbableCheck.isClimbableAhead) {
+        if (!this._climbableCheck.canClimb) {
             this._cm.setState(CharacterAirState);
             return;
         }
@@ -63,8 +63,8 @@ export class CharacterClingState extends CharacterAbstractState {
 
     public onExit(nextState?: CharacterAbstractState): void {
         this._climbableCheck.isClimbing = false;
-        this._rigidBody.useGravity = true;
-        this._rigidBody.enabled = true;
+        this._rb.useGravity = true;
+        this._rb.enabled = true;
     }
 
     public onRespawn() {
@@ -72,11 +72,6 @@ export class CharacterClingState extends CharacterAbstractState {
     }
 
     public onJump() {
-        // this._occt._doClingDetachJump = true;
-        // this._occt.setState(CharacterAirState);
-    }
-
-    private detach() {
-        // this._occt.setState(CharacterAirState);
+        this._cm.setState(CharacterAirState, {doDetach: true});
     }
 }

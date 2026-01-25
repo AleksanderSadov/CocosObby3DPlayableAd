@@ -1,8 +1,8 @@
-import { _decorator, AnimationClip, AudioClip, ICollisionEvent } from 'cc';
+import { _decorator, AnimationClip, AudioClip, Vec3 } from 'cc';
 import { CharacterGroundedState } from './CharacterGroundedState';
 import { CharacterClingState } from './CharacterClingState';
 import { CharacterAbstractState } from './CharacterAbstractState';
-import { v3_0 } from '../../General/Constants';
+import { v3_0, v3_1 } from '../../General/Constants';
 const { ccclass, property } = _decorator;
 
 @ccclass('CharacterAirState')
@@ -29,18 +29,9 @@ export class CharacterAirState extends CharacterAbstractState {
     public jumpSound: AudioClip;
 
     @property
-    public detachJumpSpeed = 60;
+    public detachJumpVelocity = 6;
     @property
-    public detachJumpTime = 0.1;
-    @property({readonly: true, visible: true, serializable: false})
-    public _detachJumpCountdown = 0;
-
-    @property
-    public detachPushBackSpeed = 120;
-    @property
-    public detachPushBackTime = 1.5;
-    @property({readonly: true, visible: true, serializable: false})
-    public _detachPushBackCountdown = 0;
+    public detachPushBackVelocity = 2;
 
     protected onLoad(): void {
         super.onLoad();
@@ -52,9 +43,9 @@ export class CharacterAirState extends CharacterAbstractState {
 
         if (payload?.doJump) {
             this._jump();
+        } else if (payload?.doDetach) {
+            this._detach();
         }
-        
-        // this.resetCountdowns();
     }
 
     updateState(deltaTime: number) {
@@ -63,7 +54,7 @@ export class CharacterAirState extends CharacterAbstractState {
             return;
         }
 
-        if (this._climbableCheck.isClimbableAhead) {
+        if (this._climbableCheck.canClimb) {
             this._cm.setState(CharacterClingState);
             return;
         }
@@ -93,18 +84,10 @@ export class CharacterAirState extends CharacterAbstractState {
 
     private resetFlags() {
         this._curJumpTimes = 0;
-        // this._occt._doJump = this._occt._doClingDetachJump = false;
     }
 
     private resetCountdowns() {
-        // this._jumpAccelerationCountdown = this._detachJumpCountdown = this._detachPushBackCountdown = 0;
-    }
-
-    public onCollisionEnter(event: ICollisionEvent): void {
-        // TODO Как-то пока слишком просто без проверок как соприкоснулись
-        // if (event.otherCollider != event.selfCollider) {
-        //     this._onLand();
-        // }
+        this._climbableCheck.stopClingCooldown();
     }
 
     public onJump() {
@@ -118,9 +101,28 @@ export class CharacterAirState extends CharacterAbstractState {
 
         this._curJumpTimes++;
         const newVelocity = v3_0;
-        this._rigidBody.getLinearVelocity(newVelocity);
+        this._rb.getLinearVelocity(newVelocity);
         newVelocity.y = this.jumpVelocity;
-        this._rigidBody.setLinearVelocity(newVelocity);
+        this._rb.setLinearVelocity(newVelocity);
+
+        const jumpBeginState = this._anim.getState(this.jumpBeginAnimClip.name);
+        const jumpLoopState = this._anim.getState(this.jumpLoopAnimClip.name);
+        if (jumpBeginState.current || jumpLoopState.current) {
+            return;
+        }
+        this._anim.crossFade(this.jumpBeginAnimClip.name);
+    }
+
+    private _detach() {
+        this._climbableCheck.startClingCooldown();
+
+        const newVelocity = v3_0.set(Vec3.ZERO);
+        newVelocity.y = this.detachJumpVelocity;
+        const back = v3_1.set(this.node.forward).negative();
+        back.multiplyScalar(this.detachPushBackVelocity);
+        newVelocity.x = back.x;
+        newVelocity.z = back.z;
+        this._rb.setLinearVelocity(newVelocity);
 
         const jumpBeginState = this._anim.getState(this.jumpBeginAnimClip.name);
         const jumpLoopState = this._anim.getState(this.jumpLoopAnimClip.name);
