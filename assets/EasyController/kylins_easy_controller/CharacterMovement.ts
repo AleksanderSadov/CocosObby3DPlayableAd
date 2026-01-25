@@ -5,6 +5,7 @@ import { GroundCheck } from '../../Scripts/ObbyCharacterController/GroundCheck';
 import { ClimbableCheck } from '../../Scripts/ObbyCharacterController/ClimbableCheck';
 import { CharacterInputProcessor } from '../../Scripts/ObbyCharacterController/CharacterInputProcessor';
 import { GameEvent, GlobalEventBus } from '../../Scripts/Events/GlobalEventBus';
+import { CustomNodeEvent } from '../../Scripts/Events/CustomNodeEvents';
 const { ccclass, property } = _decorator;
 
 // Это на основе EasyController плагина, но модифицировал (добавил карабканье, проверку земли, правку застревания в стене в прыжке из-за трения и др) и зарефакторил (стейт машин и разделение логики) для лучшей читаемости
@@ -55,10 +56,12 @@ export class CharacterMovement extends Component {
 
     protected onEnable(): void {
         this._collider.on('onCollisionEnter', this._onCollisionEnter, this);
+        this.node.on(CustomNodeEvent.NODE_FELL, this._onPlayerFell, this);
     }
 
     protected onDisable(): void {
         this._collider.off('onCollisionEnter', this._onCollisionEnter, this);
+        this.node.off(CustomNodeEvent.NODE_FELL, this._onPlayerFell, this);
     }
 
     start() {
@@ -113,6 +116,10 @@ export class CharacterMovement extends Component {
     private _respawn() {
         this._rb.setLinearVelocity(Vec3.ZERO);
         GlobalEventBus.emit(GameEvent.REQUEST_RESPAWN, {node: this.node, defaultSpawn: this._initialSpawn});
+    }
+
+    private _onPlayerFell() {
+        this._respawn();
     }
 }
 
