@@ -402,9 +402,9 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 5.907,
+      "x": 6.618,
       "y": 1,
-      "z": -1.058
+      "z": 7.094
     },
     "_lrot": {
       "__type__": "cc.Quat",
@@ -424,7 +424,7 @@
     "_euler": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": -89.99999999999999,
+      "y": -90,
       "z": 0
     },
     "_id": "fbJ2xWyBZNIrDWtMyGv1Wr"
@@ -6030,7 +6030,7 @@
     "_angularFactor": {
       "__type__": "cc.Vec3",
       "x": 0,
-      "y": 1,
+      "y": 0,
       "z": 0
     },
     "_id": "4e+68wmyNNM4dYMPtg2SBg"
@@ -6119,7 +6119,9 @@
     "detachOffsetY": -0.25,
     "rayCastMaxDistance": 0.1,
     "dotProductCheck": 0.2,
-    "clingCooldown": 0.2,
+    "clingCooldown": 0.6,
+    "allowClimb": true,
+    "fixStuckInWall": true,
     "showRayCastLine": false,
     "_id": "24BpbXKEdDr7dLJrGe+FBY"
   },
@@ -19209,7 +19211,7 @@
     "_priority": 1073741824,
     "_fov": 45,
     "_fovAxis": 0,
-    "_orthoHeight": 763.9097744360903,
+    "_orthoHeight": 381.5962441314554,
     "_near": 1,
     "_far": 2000,
     "_color": {
@@ -19428,7 +19430,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 97.8125,
+      "width": 97.80880770735524,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -19461,7 +19463,7 @@
     "_string": "Jump",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 40,
+    "_actualFontSize": 49.921875,
     "_fontSize": 40,
     "_fontFamily": "Arial",
     "_lineHeight": 40,
@@ -20526,7 +20528,7 @@
     "__prefab": null,
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 520.1953125,
+      "width": 520.1756651017214,
       "height": 50.4
     },
     "_anchorPoint": {
@@ -20559,7 +20561,7 @@
     "_string": "Raft Survival - Ocean Nomad",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 40,
+    "_actualFontSize": 49.921875,
     "_fontSize": 40,
     "_fontFamily": "Arial",
     "_lineHeight": 40,
@@ -21652,7 +21654,7 @@
     "_string": "Download now",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 20,
+    "_actualFontSize": 24.9609375,
     "_fontSize": 20,
     "_fontFamily": "Arial",
     "_lineHeight": 40,
@@ -22133,7 +22135,7 @@
     "_string": "Mute",
     "_horizontalAlign": 1,
     "_verticalAlign": 1,
-    "_actualFontSize": 20,
+    "_actualFontSize": 24.9609375,
     "_fontSize": 20,
     "_fontFamily": "Arial",
     "_lineHeight": 40,
@@ -22526,8 +22528,8 @@
     ],
     "value": {
       "__type__": "cc.Vec3",
-      "x": 8.364,
-      "y": 1.08,
+      "x": 9.137,
+      "y": 2.141,
       "z": -0.047
     }
   },
@@ -22590,8 +22592,8 @@
     ],
     "value": {
       "__type__": "cc.Vec3",
-      "x": 20,
-      "y": 2,
+      "x": 16.4,
+      "y": 12.032,
       "z": 1
     }
   },
@@ -22625,8 +22627,8 @@
     "_prefab": null,
     "_lpos": {
       "__type__": "cc.Vec3",
-      "x": 6.36,
-      "y": 1.789,
+      "x": 2.723,
+      "y": 0.836,
       "z": 0.821
     },
     "_lrot": {
@@ -22638,7 +22640,7 @@
     },
     "_lscale": {
       "__type__": "cc.Vec3",
-      "x": 1,
+      "x": 8.522,
       "y": 1,
       "z": 1
     },

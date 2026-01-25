@@ -63,6 +63,8 @@ export class CharacterClingState extends CharacterAbstractState {
 
     public onExit(nextState?: CharacterAbstractState): void {
         this._climbableCheck.isClimbing = false;
+        this._climbableCheck.startClingCooldown();
+        this._baseLookRotate(this._input.degree); // Если не повернуть персонажа, то была проблема на краю застревали в стене
         this._rb.useGravity = true;
         this._rb.enabled = true;
     }

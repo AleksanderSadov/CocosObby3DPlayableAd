@@ -114,8 +114,6 @@ export class CharacterAirState extends CharacterAbstractState {
     }
 
     private _detach() {
-        this._climbableCheck.startClingCooldown();
-
         const newVelocity = v3_0.set(Vec3.ZERO);
         newVelocity.y = this.detachJumpVelocity;
         const back = v3_1.set(this.node.forward).negative();

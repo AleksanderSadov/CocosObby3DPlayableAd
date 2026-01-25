@@ -18,7 +18,7 @@ export class ClimbableCheck extends Component {
     @property({tooltip: "Насколько перпендикулярна должна быть стена"})
     public dotProductCheck = 0.2;
     @property({tooltip: "Время сколько не прилипать снова к стене, если недавно отпрыгнули"})
-    public clingCooldown = 0.2;
+    public clingCooldown = 0.6;
     @property({tooltip: "Разрешать ли карабкаться. Отключать не планируется, но оставляю удобный переключатель для тестирования"})
     public allowClimb = true;
     @property({tooltip: "Применять ли фикс для правки застревания в стенах в прыжке (смотри код). Отключать не планируется, но оставляю удобный переключатель для тестирования"})
@@ -45,11 +45,11 @@ export class ClimbableCheck extends Component {
     public hitDotProduct = 0;
 
     @property({readonly: true, visible: true, serializable: false})
-    private _clingTimer = 0;
+    private _clingCooldownTimer = 0;
 
     public updateState(dt: number) {
-        if (this._clingTimer > 0) {
-            this._clingTimer -= dt;
+        if (this._clingCooldownTimer > 0) {
+            this._clingCooldownTimer -= dt;
         }
         this.check();
     }
@@ -101,17 +101,17 @@ export class ClimbableCheck extends Component {
         this.hitHasClimbable = hitHasClimbable;
         this.hitDotProduct = hitDotProduct;
         this.isClimbableAhead = isClimbableAhead;
-        this.isClingOnCooldown = this._clingTimer > 0;
+        this.isClingOnCooldown = this._clingCooldownTimer > 0;
         this.canClimb = this.allowClimb && this.isClimbableAhead && !this.isClingOnCooldown;
         return this.canClimb;
     }
 
     public startClingCooldown() {
-        this._clingTimer = this.clingCooldown;
+        this._clingCooldownTimer = this.clingCooldown;
     }
 
     public stopClingCooldown() {
-        this._clingTimer = 0;
+        this._clingCooldownTimer = 0;
     }
 }
 
