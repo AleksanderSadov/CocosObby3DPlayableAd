@@ -43,7 +43,8 @@ export class GroundCheck extends Component {
             DebugDrawer.drawRay(ray, this.rayCastMaxDistance, Color.RED);
         }
 
-        if (PhysicsSystem.instance.raycastClosest(ray, 0xffffffff, this.rayCastMaxDistance)) {
+        // обращаю внимание важно исключить триггеры queryTrigger = false, тут они не подразумевались, иначе будем упираться в невидимые стены
+        if (PhysicsSystem.instance.raycastClosest(ray, 0xffffffff, this.rayCastMaxDistance, false)) {
             const hit = PhysicsSystem.instance.raycastClosestResult;
             const currentVelocity = v3_2;
             this._rb.getLinearVelocity(currentVelocity);

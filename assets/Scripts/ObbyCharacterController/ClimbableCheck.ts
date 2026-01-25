@@ -82,7 +82,8 @@ export class ClimbableCheck extends Component {
         let hitHasClimbable = false;
         let hitDotProduct = 0;
         let isClimbableAhead = false;
-        if (PhysicsSystem.instance.raycastClosest(ray, 0xffffffff, distance)) {
+        // обращаю внимание важно исключить триггеры queryTrigger = false, тут они не подразумевались, иначе будем упираться в невидимые стены
+        if (PhysicsSystem.instance.raycastClosest(ray, 0xffffffff, distance, false)) {
             const hit: PhysicsRayResult = PhysicsSystem.instance.raycastClosestResult;
             hitNode = hit.collider.node;
             hitNormal.set(hit.hitNormal);
