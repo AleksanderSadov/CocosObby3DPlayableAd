@@ -12,7 +12,7 @@ export class Canvas extends Component {
     }
 
     protected onDisable(): void {
-        GlobalEventBus.on(GameEvent.GAME_END, this._onGameEnd, this);
+        GlobalEventBus.off(GameEvent.GAME_END, this._onGameEnd, this);
     }
 
     private _onGameEnd() {

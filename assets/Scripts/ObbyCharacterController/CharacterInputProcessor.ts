@@ -32,12 +32,11 @@ export class CharacterInputProcessor extends Component {
         EasyController.off(EasyControllerEvent.MOVEMENT, this._onMoveInput, this);
         EasyController.off(EasyControllerEvent.MOVEMENT_STOP, this._onMoveInputStop, this);
         EasyController.off(EasyControllerEvent.BUTTON, this._onButton, this);
-        GlobalEventBus.on(GameEvent.GAME_END, this._onGameEnd, this);
+        GlobalEventBus.off(GameEvent.GAME_END, this._onGameEnd, this);
         this.degree = this.offset = this.cos = this.sin = 0;
     }
 
     private _onMoveInput(degree: number, offset: number) {
-        GlobalEventBus.emit(GameEvent.PLAYER_ACTIVITY);
         this.degree = degree;
         this.offset = offset;
         const rad = degree * Math.PI / 180;
@@ -47,14 +46,12 @@ export class CharacterInputProcessor extends Component {
     }
 
     private _onMoveInputStop() {
-        GlobalEventBus.emit(GameEvent.PLAYER_ACTIVITY);
         this.degree = this.offset = 0;
         this.sin = this.cos = 0;
         this._callback.onMoveInputStop();
     }
 
     private _onButton(btnName: string) {
-        GlobalEventBus.emit(GameEvent.PLAYER_ACTIVITY);
         this._callback.onButton(btnName);
     }
 
