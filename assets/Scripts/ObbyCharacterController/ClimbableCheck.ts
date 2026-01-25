@@ -3,6 +3,7 @@ import { ray, v3_1 } from '../General/Constants';
 import { ClimbableWall } from '../Obstacles/ClimbableWall';
 import { DEBUG } from 'cc/env';
 import { DebugDrawer } from '../Debug/DebugDrawer';
+import { PHY_GROUP } from '../General/PhysicsGroups';
 const { ccclass, property } = _decorator;
 
 @ccclass('ClimbableCheck')
@@ -83,7 +84,8 @@ export class ClimbableCheck extends Component {
         let hitDotProduct = 0;
         let isClimbableAhead = false;
         // обращаю внимание важно исключить триггеры queryTrigger = false, тут они не подразумевались, иначе будем упираться в невидимые стены
-        if (PhysicsSystem.instance.raycastClosest(ray, 0xffffffff, distance, false)) {
+        // а так же маской исключаем себя и npc
+        if (PhysicsSystem.instance.raycastClosest(ray, PHY_GROUP.DEFAULT, distance, false)) {
             const hit: PhysicsRayResult = PhysicsSystem.instance.raycastClosestResult;
             hitNode = hit.collider.node;
             hitNormal.set(hit.hitNormal);

@@ -2,6 +2,7 @@ import { _decorator, Color, Component, Node, PhysicsSystem, RigidBody, Vec3 } fr
 import { ray, v3_0, v3_1, v3_2 } from '../General/Constants';
 import { DEBUG } from 'cc/env';
 import { DebugDrawer } from '../Debug/DebugDrawer';
+import { PHY_GROUP } from '../General/PhysicsGroups';
 const { ccclass, property } = _decorator;
 
 @ccclass('GroundCheck')
@@ -44,7 +45,8 @@ export class GroundCheck extends Component {
         }
 
         // обращаю внимание важно исключить триггеры queryTrigger = false, тут они не подразумевались, иначе будем упираться в невидимые стены
-        if (PhysicsSystem.instance.raycastClosest(ray, 0xffffffff, this.rayCastMaxDistance, false)) {
+        // а так же маской исключаем себя и npc
+        if (PhysicsSystem.instance.raycastClosest(ray, PHY_GROUP.DEFAULT, this.rayCastMaxDistance, false)) {
             const hit = PhysicsSystem.instance.raycastClosestResult;
             const currentVelocity = v3_2;
             this._rb.getLinearVelocity(currentVelocity);
