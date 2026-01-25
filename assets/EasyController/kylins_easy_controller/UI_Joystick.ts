@@ -68,7 +68,8 @@ export class UI_Joystick extends Component {
 
         this._buttons = this.node.getChildByName('buttons');
 
-        this._key2buttonMap[KeyCode.KEY_J] = 'btn_slot_0';
+        // this._key2buttonMap[KeyCode.KEY_J] = 'btn_slot_0';
+        this._key2buttonMap[KeyCode.SPACE] = 'btn_slot_0';
         this._key2buttonMap[KeyCode.KEY_K] = 'btn_slot_1';
         this._key2buttonMap[KeyCode.KEY_L] = 'btn_slot_2';
         this._key2buttonMap[KeyCode.KEY_U] = 'btn_slot_3';
