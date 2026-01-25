@@ -81,10 +81,6 @@ export class CharacterClingState extends CharacterAbstractState {
         this._rb.enabled = true;
     }
 
-    public onRespawn() {
-        // this._occt._playerVelocity.set(0, 0, 0);
-    }
-
     public onJump() {
         this._cm.setState(CharacterAirState, {doDetach: true});
     }

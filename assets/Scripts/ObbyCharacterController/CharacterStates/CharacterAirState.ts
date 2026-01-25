@@ -11,7 +11,7 @@ export class CharacterAirState extends CharacterAbstractState {
     jumpVelocity = 1.0;
 
     @property
-    maxJumpTimes: number = 2;
+    maxJumpTimes: number = 1;
 
     @property({readonly: true, visible: true, serializable: false})
     private _curJumpTimes: number = 0;
@@ -73,25 +73,19 @@ export class CharacterAirState extends CharacterAbstractState {
 
     public onExit(nextState?: CharacterAbstractState): void {
         this.resetFlags();
-        this.resetCountdowns();
     }
 
-    public onRespawn() {
-        // this._occt._playerVelocity.set(0, 0, 0);
+    public beforeRespawn() {
         this.resetFlags();
-        this.resetCountdowns();
     }
 
     private resetFlags() {
         this._curJumpTimes = 0;
     }
 
-    private resetCountdowns() {
-        this._climbableCheck.stopClingCooldown();
-    }
-
     public onJump() {
-        this._jump();
+        // Пока не разрешаю двойной прыжок
+        // this._jump();
     }
 
     private _jump() {

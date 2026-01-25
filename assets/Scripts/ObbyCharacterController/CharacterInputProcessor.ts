@@ -56,6 +56,7 @@ export class CharacterInputProcessor extends Component {
     }
 
     private _onGameEnd() {
+        this._onMoveInputStop();
         this.enabled = false;
     }
 }

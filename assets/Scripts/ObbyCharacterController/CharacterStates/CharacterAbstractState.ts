@@ -32,7 +32,7 @@ export abstract class CharacterAbstractState extends Component {
     public onCollisionEnter(event: ICollisionEvent): void {}
     public onTriggerEnter(event: ITriggerEvent): void {}
     public onJump(): void {}
-    public onRespawn(): void {}
+    public beforeRespawn(): void {}
 
     protected _baseMovement() {
         if (this._input.offset <= 0) {

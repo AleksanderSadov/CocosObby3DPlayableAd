@@ -53,10 +53,6 @@ export class CharacterGroundedState extends CharacterAbstractState {
         this._anim.crossFade(this.idleAnimClip.name);
     }
 
-    public onRespawn() {
-        // this._cm._playerVelocity.set(0, 0, 0);
-    }
-
     public onJump() {
         this._cm.setState(CharacterAirState, {doJump: true});
     }
