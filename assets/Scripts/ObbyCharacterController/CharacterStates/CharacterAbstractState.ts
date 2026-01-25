@@ -1,6 +1,6 @@
 import { _decorator, AnimationClip, Component, ICollisionEvent, RigidBody, SkeletalAnimation, Vec3 } from 'cc';
 import { CharacterMovement } from 'db://assets/EasyController/kylins_easy_controller/CharacterMovement';
-import { v3_0, v3_1, v3_2 } from '../../General/Constants';
+import { v3_0, v3_1, v3_2, v3_3 } from '../../General/Constants';
 import { GroundCheck } from '../GroundCheck';
 import { ClimbableCheck } from '../ClimbableCheck';
 import { CharacterInputProcessor } from '../CharacterInputProcessor';
@@ -50,10 +50,10 @@ export abstract class CharacterAbstractState extends Component {
         // Решение: Убирать скорость в направлении стены
         // Пока удобно переиспользовать проверку на стены через climbableCheck
         if (this._climbableCheck.fixStuckInWall && this._climbableCheck.hitNode) {
-            const wallHitNormal = this._climbableCheck.hitNormal;
+            const wallHitNormal = v3_2.set(this._climbableCheck.hitNormal);
             const pushTowardWall = Vec3.dot(newVelocity, wallHitNormal);
             if (pushTowardWall < 0) {
-                const correction = v3_2;
+                const correction = v3_3;
                 correction.set(wallHitNormal.multiplyScalar(pushTowardWall));
                 newVelocity.subtract(correction);
             }

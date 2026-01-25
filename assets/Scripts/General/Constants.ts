@@ -5,6 +5,7 @@ export const v2_0 = new Vec2();
 export const v3_0 = new Vec3();
 export const v3_1 = new Vec3();
 export const v3_2 = new Vec3();
+export const v3_3 = new Vec3();
 export const rotation = new Quat();
 export const scale = new Vec3(1);
 export const ray = new geometry.Ray();
