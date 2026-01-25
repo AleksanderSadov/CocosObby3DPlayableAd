@@ -3,6 +3,7 @@ import { CharacterGroundedState } from './CharacterGroundedState';
 import { CharacterClingState } from './CharacterClingState';
 import { CharacterAbstractState } from './CharacterAbstractState';
 import { v3_0, v3_1 } from '../../General/Constants';
+import { GameEvent, GlobalEventBus } from '../../Events/GlobalEventBus';
 const { ccclass, property } = _decorator;
 
 @ccclass('CharacterAirState')
@@ -93,6 +94,7 @@ export class CharacterAirState extends CharacterAbstractState {
             return;
         }
 
+        GlobalEventBus.emit(GameEvent.PLAY_SOUND, 'jump');
         this._curJumpTimes++;
         const newVelocity = v3_0;
         this._rb.getLinearVelocity(newVelocity);
@@ -108,6 +110,7 @@ export class CharacterAirState extends CharacterAbstractState {
     }
 
     private _detach() {
+        GlobalEventBus.emit(GameEvent.PLAY_SOUND, 'jump');
         const newVelocity = v3_0.set(Vec3.ZERO);
         newVelocity.y = this.detachJumpVelocity;
         const back = v3_1.set(this.node.forward).negative();

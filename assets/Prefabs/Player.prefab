@@ -7700,6 +7700,10 @@
       "__uuid__": "c657cafb-170c-45b7-ba51-ac61469db43f@35302",
       "__expectedType__": "cc.AnimationClip"
     },
+    "jumpSound": {
+      "__uuid__": "a79b8a15-9df1-4c2e-9af9-a133675621c3",
+      "__expectedType__": "cc.AudioClip"
+    },
     "detachJumpVelocity": 6,
     "detachPushBackVelocity": 2,
     "_id": ""
