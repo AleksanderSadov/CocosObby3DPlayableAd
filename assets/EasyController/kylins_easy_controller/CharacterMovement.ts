@@ -1,4 +1,4 @@
-import { _decorator, Component, RigidBody, find, Camera, SkeletalAnimation, ICollisionEvent, CapsuleCollider, Vec3 } from 'cc';
+import { _decorator, Component, RigidBody, find, Camera, SkeletalAnimation, ICollisionEvent, CapsuleCollider, Vec3, ITriggerEvent, PhysicsGroup } from 'cc';
 import { CharacterAbstractState } from '../../Scripts/ObbyCharacterController/CharacterStates/CharacterAbstractState';
 import { CharacterAirState } from '../../Scripts/ObbyCharacterController/CharacterStates/CharacterAirState';
 import { GroundCheck } from '../../Scripts/ObbyCharacterController/GroundCheck';
@@ -6,6 +6,7 @@ import { ClimbableCheck } from '../../Scripts/ObbyCharacterController/ClimbableC
 import { CharacterInputProcessor } from '../../Scripts/ObbyCharacterController/CharacterInputProcessor';
 import { GameEvent, GlobalEventBus } from '../../Scripts/Events/GlobalEventBus';
 import { CustomNodeEvent } from '../../Scripts/Events/CustomNodeEvents';
+import { Hazard } from '../../Scripts/Obstacles/Hazard';
 const { ccclass, property } = _decorator;
 
 // Это на основе EasyController плагина, но модифицировал (добавил карабканье, проверку земли, правку застревания в стене в прыжке из-за трения и др) и зарефакторил (стейт машин и разделение логики) для лучшей читаемости
@@ -56,11 +57,13 @@ export class CharacterMovement extends Component {
 
     protected onEnable(): void {
         this._collider.on('onCollisionEnter', this._onCollisionEnter, this);
+        this._collider.on('onTriggerEnter', this._onTriggerEnter, this);
         this.node.on(CustomNodeEvent.NODE_FELL, this._onPlayerFell, this);
     }
 
     protected onDisable(): void {
         this._collider.off('onCollisionEnter', this._onCollisionEnter, this);
+        this._collider.off('onTriggerEnter', this._onTriggerEnter, this);
         this.node.off(CustomNodeEvent.NODE_FELL, this._onPlayerFell, this);
     }
 
@@ -87,6 +90,15 @@ export class CharacterMovement extends Component {
 
     private _onCollisionEnter(event: ICollisionEvent) {
         this._currentState.onCollisionEnter(event);
+    }
+
+    private _onTriggerEnter(event: ITriggerEvent) {
+        const hazard = event.otherCollider.getComponent(Hazard);
+        if (hazard) {
+            this._respawn();
+            return;
+        }
+        this._currentState.onTriggerEnter(event);
     }
 
     update(deltaTime: number) {

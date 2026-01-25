@@ -1,4 +1,4 @@
-import { _decorator, Component, Vec3, Node, isValid } from 'cc';
+import { _decorator, Component, Node, isValid } from 'cc';
 import { PlatformCheckpoint } from './PlatformCheckpoint';
 import { GameEvent, GlobalEventBus } from '../Events/GlobalEventBus';
 import { v3_0 } from '../General/Constants';
@@ -27,7 +27,7 @@ export class CheckpointManager extends Component {
         let respawnPosition = v3_0;
         if (isValid(this._checkpoint, true)) {
             respawnPosition.set(this._checkpoint.node.worldPosition);
-            respawnPosition.add(new Vec3(0, this.spawnOffsetY, 0));
+            respawnPosition.add3f(0, this.spawnOffsetY, 0);
         } else {
             respawnPosition.set(event.defaultSpawn);
         }

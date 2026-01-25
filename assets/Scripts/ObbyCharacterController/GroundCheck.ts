@@ -1,5 +1,7 @@
-import { _decorator, Component, Node, PhysicsSystem, RigidBody, Vec3 } from 'cc';
-import { ray, v3_0 } from '../General/Constants';
+import { _decorator, Color, Component, Node, PhysicsSystem, RigidBody, Vec3 } from 'cc';
+import { ray, v3_0, v3_1, v3_2 } from '../General/Constants';
+import { DEBUG } from 'cc/env';
+import { DebugDrawer } from '../Debug/DebugDrawer';
 const { ccclass, property } = _decorator;
 
 @ccclass('GroundCheck')
@@ -12,6 +14,9 @@ export class GroundCheck extends Component {
     public speedOffsetY = 0.5;
     @property({tooltip: "Насколько перпендикулярным должен быть пол"})
     public normalY = 0.6;
+
+    @property
+    public showRayCastLine: boolean = false;
 
     @property({readonly: true, serializable: false})
     public isGroundBelow: boolean = false;
@@ -28,15 +33,19 @@ export class GroundCheck extends Component {
 
     // пока привязан к компоненту, но можно вынести в чистую функцию, если потребуется, просто сейчас удобно и так и не усложняю
     public check(): boolean {
-        const origin = this.node.worldPosition;
-        const down = v3_0.set(0, -1, 0);
+        const origin = v3_0.set(this.node.worldPosition);
+        const down = v3_1.set(0, -1, 0);
         const offsetY = this.offsetY;
         ray.o.set(origin.x, origin.y + offsetY, origin.z);
         ray.d.set(down);
 
+        if (DEBUG && this.showRayCastLine) {
+            DebugDrawer.drawRay(ray, this.rayCastMaxDistance, Color.RED);
+        }
+
         if (PhysicsSystem.instance.raycastClosest(ray, 0xffffffff, this.rayCastMaxDistance)) {
             const hit = PhysicsSystem.instance.raycastClosestResult;
-            const currentVelocity = v3_0;
+            const currentVelocity = v3_2;
             this._rb.getLinearVelocity(currentVelocity);
             this.hitNormal.set(hit.hitNormal);
             this.isGroundBelow = hit.hitNormal.y > this.normalY && currentVelocity.y <= this.speedOffsetY;

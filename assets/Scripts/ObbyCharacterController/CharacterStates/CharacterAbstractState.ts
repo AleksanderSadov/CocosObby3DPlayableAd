@@ -1,4 +1,4 @@
-import { _decorator, AnimationClip, Component, ICollisionEvent, RigidBody, SkeletalAnimation, Vec3 } from 'cc';
+import { _decorator, AnimationClip, Component, ICollisionEvent, ITriggerEvent, RigidBody, SkeletalAnimation, Vec3 } from 'cc';
 import { CharacterMovement } from 'db://assets/EasyController/kylins_easy_controller/CharacterMovement';
 import { v3_0, v3_1, v3_2, v3_3 } from '../../General/Constants';
 import { GroundCheck } from '../GroundCheck';
@@ -30,6 +30,7 @@ export abstract class CharacterAbstractState extends Component {
     public onMoveInput(degree: number, offset: number): void {}
     public onMoveInputStop(): void {}
     public onCollisionEnter(event: ICollisionEvent): void {}
+    public onTriggerEnter(event: ITriggerEvent): void {}
     public onJump(): void {}
     public onRespawn(): void {}
 

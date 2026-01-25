@@ -1,5 +1,6 @@
-import { _decorator, ColliderComponent, Component } from 'cc';
+import { _decorator, ColliderComponent, Component, ICollisionEvent } from 'cc';
 import { GameEvent, GlobalEventBus } from '../Events/GlobalEventBus';
+import { Player } from '../ObbyCharacterController/Player';
 const { ccclass, property } = _decorator;
 
 @ccclass('PlatformCheckpoint')
@@ -19,20 +20,20 @@ export class PlatformCheckpoint extends Component {
     }
     
     protected onEnable(): void {
-        // onControllerColliderHit триггерится постоянно когда игрок стоит на платформе, нужно иметь это ввиду
-        // поэтому детект сохранения сделал через отдельный триггер коллайдер
-        // TODO триггер может сработать даже если персонаж не полностью презимлился на платформу, но правка пока с низким приоритетом
-        this._triggerCollider.on('onControllerTriggerEnter', this.onControllerTriggerEnter, this);
+        this._triggerCollider.on('onTriggerEnter', this.onTriggerEnter, this);
     }
 
     protected onDisable(): void {
-        this._triggerCollider.off('onControllerTriggerEnter', this.onControllerTriggerEnter, this);
+        this._triggerCollider.off('onTriggerEnter', this.onTriggerEnter, this);
     }
 
-    onControllerTriggerEnter(event: any) {
+    onTriggerEnter(event: ICollisionEvent) {
         if (this.isActiveCheckpoint) {
             return;
         }
-        GlobalEventBus.emit(GameEvent.SAVE_CHECKPOINT, this);
+        const player = event.otherCollider.getComponent(Player);
+        if (player) {
+            GlobalEventBus.emit(GameEvent.SAVE_CHECKPOINT, this);
+        }
     }
 }
