@@ -34,6 +34,12 @@ export class CharacterClingState extends CharacterAbstractState {
         const targetQuat = rotation;
         Quat.fromViewUp(targetQuat, wallForward, up);
         this.node.setRotation(targetQuat);
+
+        if (this._input.offset > 0) {
+            this._anim.crossFade(this.moveAnimClip.name, 0.5);
+        } else {
+            this._anim.crossFade(this.idleAnimClip.name, 0.5);
+        }
     }
 
     updateState(deltaTime: number) {
@@ -64,7 +70,13 @@ export class CharacterClingState extends CharacterAbstractState {
     public onExit(nextState?: CharacterAbstractState): void {
         this._climbableCheck.isClimbing = false;
         this._climbableCheck.startClingCooldown();
-        this._baseLookRotate(this._input.degree); // Если не повернуть персонажа, то была проблема на краю застревали в стене
+        if (this._input.offset > 0) {
+            // offset > 0, значит есть инпут движения и поворачиваемся в сторону движения
+            // Если не повернуть персонажа, то была проблема на краю застревали в стене
+            this._baseLookRotate(this._input.degree); 
+        } else {
+            // Инпута движения в сторону не было, поворачивать персонажа не надо. Например если нажать только прыжок для отскока от стены
+        }
         this._rb.useGravity = true;
         this._rb.enabled = true;
     }
