@@ -1,7 +1,6 @@
 import { _decorator, AnimationClip, Quat, Vec3 } from 'cc';
 import { CharacterAbstractState } from './CharacterAbstractState';
-import { CharacterAirState } from './CharacterAirState';
-import { rotation, v3_0, v3_1, v3_2 } from '../../General/Constants';
+import { CharacterState, rotation, v3_0, v3_1, v3_2 } from '../../General/Constants';
 const { ccclass, property } = _decorator;
 
 @ccclass('CharacterClingState')
@@ -44,7 +43,7 @@ export class CharacterClingState extends CharacterAbstractState {
 
     updateState(deltaTime: number) {
         if (!this._climbableCheck.canClimb) {
-            this._controller.setState(CharacterAirState);
+            this._controller.setState(CharacterState.Air);
             return;
         }
 
@@ -84,6 +83,6 @@ export class CharacterClingState extends CharacterAbstractState {
     }
 
     public onJump() {
-        this._controller.setState(CharacterAirState, {doDetach: true});
+        this._controller.setState(CharacterState.Air, {doDetach: true});
     }
 }

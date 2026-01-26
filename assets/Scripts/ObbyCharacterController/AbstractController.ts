@@ -1,11 +1,11 @@
 import { _decorator, Camera, CapsuleCollider, Component, find, ICollisionEvent, ITriggerEvent, Node, RigidBody, SkeletalAnimation, Vec3 } from 'cc';
 import { GroundCheck } from './GroundCheck';
 import { ClimbableCheck } from './ClimbableCheck';
-import { CharacterAbstractState } from './CharacterStates/CharacterAbstractState';
 import { EDITOR, EDITOR_NOT_IN_PREVIEW } from 'cc/env';
 import { CustomNodeEvent } from '../Events/CustomNodeEvents';
-import { CharacterAirState } from './CharacterStates/CharacterAirState';
 import { Hazard } from '../Obstacles/Hazard';
+import { CharacterState } from '../General/Constants';
+import { ICharacterState } from './CharacterStates/ICharacterState';
 const { ccclass, property } = _decorator;
 
 // Это на основе EasyController плагина, но модифицировал (добавил карабканье, проверку земли, правку застревания в стене в прыжке из-за трения и др) и зарефакторил (стейт машин и разделение логики) для лучшей читаемости
@@ -40,8 +40,7 @@ export abstract class AbstractController extends Component {
     @property({readonly: true, visible: true, serializable: false})
     public inputCos: number = 0;
 
-    protected _states: Map<new (...args: any[]) => CharacterAbstractState, CharacterAbstractState> = new Map();
-    protected _currentState: CharacterAbstractState = null;
+    protected _currentState: ICharacterState = null;
     @property
     public get currentStateName(): string {
         return this._currentState?.constructor?.name ?? 'None';
@@ -86,15 +85,11 @@ export abstract class AbstractController extends Component {
     }
 
     start() {
-        this.setState(CharacterAirState); // пока по простому будем считать что всегда стартуем в воздухе
+        this.setState(CharacterState.Air); // пока по простому будем считать что всегда стартуем в воздухе
     }
 
-    public setState(stateCtor: new (...args: any[]) => CharacterAbstractState, payload?: any) {
-        let next = this._states.get(stateCtor);
-        if (!next) {
-            next = this.getComponent(stateCtor);
-            this._states.set(stateCtor, next);
-        }
+    public setState(state: CharacterState, payload?: any) {
+        const next = this.getComponent(state) as unknown as ICharacterState;
         if (this._currentState === next) {
             return;
         }

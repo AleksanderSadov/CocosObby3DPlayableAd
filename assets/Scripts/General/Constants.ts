@@ -27,3 +27,9 @@ export const ColorChallengeMap: Map<string, Color> = new Map([
     [ColorChallengeType.White, Color.WHITE],
     [ColorChallengeType.Yellow, Color.YELLOW],
 ])
+
+export enum CharacterState {
+    Air = "CharacterAirState",
+    Cling = "CharacterClingState",
+    Grounded = "CharacterGroundedState",
+}

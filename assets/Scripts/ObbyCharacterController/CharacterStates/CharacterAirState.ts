@@ -1,8 +1,6 @@
 import { _decorator, AnimationClip, AudioClip, Vec3 } from 'cc';
-import { CharacterGroundedState } from './CharacterGroundedState';
-import { CharacterClingState } from './CharacterClingState';
 import { CharacterAbstractState } from './CharacterAbstractState';
-import { v3_0, v3_1 } from '../../General/Constants';
+import { CharacterState, v3_0, v3_1 } from '../../General/Constants';
 const { ccclass, property } = _decorator;
 
 @ccclass('CharacterAirState')
@@ -55,7 +53,7 @@ export class CharacterAirState extends CharacterAbstractState {
         }
 
         if (this._climbableCheck.canClimb) {
-            this._controller.setState(CharacterClingState);
+            this._controller.setState(CharacterState.Cling);
             return;
         }
 
@@ -128,6 +126,6 @@ export class CharacterAirState extends CharacterAbstractState {
 
     private _onLand() {
         this._anim.crossFade(this.jumpLandAnimClip.name);
-        this._controller.setState(CharacterGroundedState);
+        this._controller.setState(CharacterState.Grounded);
     }
 }

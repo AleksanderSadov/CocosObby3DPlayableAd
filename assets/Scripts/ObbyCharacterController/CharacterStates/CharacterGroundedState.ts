@@ -1,7 +1,6 @@
 import { _decorator, AnimationClip, Vec3 } from 'cc';
-import { CharacterAirState } from './CharacterAirState';
 import { CharacterAbstractState } from './CharacterAbstractState';
-import { CharacterClingState } from './CharacterClingState';
+import { CharacterState } from '../../General/Constants';
 const { ccclass, property } = _decorator;
 
 @ccclass('CharacterGroundedState')
@@ -27,12 +26,12 @@ export class CharacterGroundedState extends CharacterAbstractState {
 
     public updateState(deltaTime: number) {
         if (!this._groundCheck.isGroundBelow) {
-            this._controller.setState(CharacterAirState);
+            this._controller.setState(CharacterState.Air);
             return;
         }
 
         if (this._climbableCheck.canClimb) {
-            this._controller.setState(CharacterClingState);
+            this._controller.setState(CharacterState.Cling);
             return;
         }
 
@@ -52,6 +51,6 @@ export class CharacterGroundedState extends CharacterAbstractState {
     }
 
     public onJump() {
-        this._controller.setState(CharacterAirState, {doJump: true});
+        this._controller.setState(CharacterState.Air, {doJump: true});
     }
 }
