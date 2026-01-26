@@ -3,7 +3,7 @@ import { CharacterMovement } from 'db://assets/EasyController/kylins_easy_contro
 import { v3_0, v3_1, v3_2, v3_3 } from '../../General/Constants';
 import { GroundCheck } from '../GroundCheck';
 import { ClimbableCheck } from '../ClimbableCheck';
-import { CharacterInputProcessor } from '../CharacterInputProcessor';
+import { CharacterInputProcessor } from '../CharacterInput/CharacterInputProcessor';
 const { ccclass } = _decorator;
 
 @ccclass('CharacterAbstractState')
@@ -69,10 +69,16 @@ export abstract class CharacterAbstractState extends Component {
     }
 
     protected _baseLookRotate(degree: number) {
-        const cameraRotationY = this._cm.mainCamera.node.eulerAngles.y;
         const uiToGame = -90; // //In a 2D interface, the x-axis is 0, while in a 3D scene, the area directly in front is 0, so a -90 degree rotation is needed. (Rotate 90 degrees clockwise)
-        v3_0.set(0, cameraRotationY + degree + uiToGame, 0);
-        this.node.setRotationFromEuler(v3_0);
+        if (this._cm.isPlayer) {
+            const cameraRotationY = this._cm.mainCamera.node.eulerAngles.y;
+            v3_0.set(0, cameraRotationY + degree + uiToGame, 0);
+            this.node.setRotationFromEuler(v3_0);
+        } else {
+            // v3_0.set(0, degree, 0);
+            // this.node.setRotationFromEuler(v3_0);
+        }
+        
     }
 
     protected initClips(clips: AnimationClip[]) {

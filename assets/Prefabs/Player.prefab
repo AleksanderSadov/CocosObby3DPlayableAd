@@ -7567,6 +7567,7 @@
     "__prefab": {
       "__id__": 261
     },
+    "isPlayer": true,
     "mainCamera": null,
     "maxVelocity": 4,
     "anim": {
@@ -7579,7 +7580,7 @@
     "fileId": "022sx6FiNABrfmsjQr4wnk"
   },
   {
-    "__type__": "7a941zFhL5H4ICILmF5C9fR",
+    "__type__": "1150dm+9lRLGbiTdOrMlhdg",
     "_name": "",
     "_objFlags": 0,
     "__editorExtras__": {},
@@ -7594,7 +7595,7 @@
   },
   {
     "__type__": "cc.CompPrefabInfo",
-    "fileId": "deSe7hrIxKP6Dvw7HosOPf"
+    "fileId": "07rf7mLeFH574WwIpY4oSE"
   },
   {
     "__type__": "4d89fsWWw1CsaNoy4W5GlF2",

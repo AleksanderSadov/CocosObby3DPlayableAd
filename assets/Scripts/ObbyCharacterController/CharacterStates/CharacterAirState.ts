@@ -94,7 +94,7 @@ export class CharacterAirState extends CharacterAbstractState {
             return;
         }
 
-        GlobalEventBus.emit(GameEvent.PLAY_SOUND, 'jump');
+        this._cm.playSound('jump');
         this._curJumpTimes++;
         const newVelocity = v3_0;
         this._rb.getLinearVelocity(newVelocity);
@@ -110,7 +110,7 @@ export class CharacterAirState extends CharacterAbstractState {
     }
 
     private _detach() {
-        GlobalEventBus.emit(GameEvent.PLAY_SOUND, 'jump');
+        this._cm.playSound('jump');
         const newVelocity = v3_0.set(Vec3.ZERO);
         newVelocity.y = this.detachJumpVelocity;
         const back = v3_1.set(this.node.forward).negative();
