@@ -32,7 +32,7 @@ export class PackshotUI extends Component {
         } else {
             link = androidLink;
         }
-        // mraid не успел проверить
+
         if (window.mraid) {
             window.mraid.open(link);
         } else {
@@ -40,5 +40,3 @@ export class PackshotUI extends Component {
         }
     }
 }
-
-
