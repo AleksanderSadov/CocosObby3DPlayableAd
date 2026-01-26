@@ -16,5 +16,22 @@
       "type": "custom"
     },
     "displayRatio": 2
+  },
+  "textureCompressConfig": {
+    "customConfigs": {},
+    "userPreset": {
+      "08M9E2rpFJrY1d/OhVxpTX": null,
+      "69q2h5RwtPt6BR/12rEx3+": null,
+      "93Yj/Q4zNJZIaA1osVI++u": {
+        "name": "Playable",
+        "options": {
+          "web": {
+            "png": {
+              "quality": 60
+            }
+          }
+        }
+      }
+    }
   }
 }
