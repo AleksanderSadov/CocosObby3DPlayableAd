@@ -9,6 +9,7 @@ const { ccclass, property } = _decorator;
 
 @ccclass('NPCController')
 export class NPCController extends AbstractController {
+    // Ноды визуальные у путей можно просто выключить после тестирования
     @property(Node)
     public targetsRoot: Node | null = null;
 
@@ -148,7 +149,7 @@ export class NPCController extends AbstractController {
             onReach?: () => void;
         }
     ): boolean {
-        const stopDistance = 0.4;
+        const stopDistance = 0.5;
         const targetPos = v3_0.set(target.worldPosition);
 
         if (!options.isClimb) {
@@ -247,7 +248,7 @@ export class NPCController extends AbstractController {
         this.inputCos = this.inputSin = 0;
         this._rb?.setLinearVelocity(Vec3.ZERO);
         this._currentState?.beforeRespawn();
-        this._delay = Math.round(Math.random() * 1 + 1); // немного задержки перед стартом, плюс рандом чтобы не зацикливались в одно и тоже
+        this._delay = Math.random() * 1 + 1;
         this.currentTargetIndex = this.spawnIndex;
         this._round = 0;
         this._color = null;
