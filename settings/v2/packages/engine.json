@@ -18,10 +18,10 @@
             "_value": false
           },
           "animation": {
-            "_value": false
+            "_value": true
           },
           "skeletal-animation": {
-            "_value": false
+            "_value": true
           },
           "3d": {
             "_value": true
@@ -196,6 +196,7 @@
         "includeModules": [
           "2d",
           "3d",
+          "animation",
           "audio",
           "base",
           "custom-pipeline",
@@ -204,6 +205,7 @@
           "graphics",
           "physics-ammo",
           "profiler",
+          "skeletal-animation",
           "tween",
           "ui"
         ],
