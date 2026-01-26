@@ -49,7 +49,7 @@ export class PlayerController extends AbstractController {
         GlobalEventBus.emit(GameEvent.PLAY_SOUND, clipName, volume);
     }
 
-    public onRespawn(): void {
+    protected _onRespawn(): void {
         this._rb?.setLinearVelocity(Vec3.ZERO);
         this._currentState?.beforeRespawn();
         const defaultSpawn = v3_0.set(this.spawnTarget.worldPosition).add3f(0, this.spawnOffsetY, 0);

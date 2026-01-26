@@ -35,8 +35,8 @@ export class NPCController extends AbstractController {
     private _finishTargetIndex = 0;
     @property({readonly: true, visible: true, serializable: false})
     private _finished = false;
-
-    private _delay = 1;
+    @property({readonly: true, visible: true, serializable: false})
+    private _delay = 2;
     
     // Для тестирования можешь цеплять камеру за NPC и смотреть его путь. Main Camera -> ThirdPersonCamera -> Target
     // Можешь перетащить в spawnTarget нужный участок пути, чтобы NPC начинал с него
@@ -66,7 +66,7 @@ export class NPCController extends AbstractController {
         GlobalEventBus.off(GameEvent.COLOR_ROUND_TICK, this._onRoundTick, this);
     }
     
-    // Тут надо рефакторить и вынести инпуты и ИИ, убрать магические числа, но пока так
+    // Тут надо рефакторить, но пока так
     update(dt: number) {
         super.update(dt);
 
@@ -77,10 +77,6 @@ export class NPCController extends AbstractController {
         if (this._delay > 0) {
             this._delay -= dt;
             return;
-        }
-
-        if (this.node.position.z <= -50) {
-            this.currentTargetIndex = 12;
         }
 
         if (this._tryFinish) {
@@ -103,7 +99,6 @@ export class NPCController extends AbstractController {
         }
 
         this._moveTowardsNode(this._closestPlatform, dt, {
-            stopDistance: 0.3,
             onReach: () => {
                 this._closestPlatform = null;
                 this._onMoveInputStop();
@@ -121,7 +116,6 @@ export class NPCController extends AbstractController {
 
         const isClimbTarget = this.currentTarget.name.includes('climb');
         const reached = this._moveTowardsNode(this.currentTarget, dt, {
-            stopDistance: 0.3,
             isClimb: isClimbTarget,
             onReach: () => {
                 if (this.currentTargetIndex == 7 || this.currentTargetIndex == 11) {
@@ -142,7 +136,6 @@ export class NPCController extends AbstractController {
         }
 
         this._moveTowardsNode(this.currentTarget, dt, {
-            stopDistance: 0.3,
             onReach: () => this._finishTargetIndex++,
         });
     }
@@ -151,11 +144,11 @@ export class NPCController extends AbstractController {
         target: Node,
         dt: number,
         options: {
-            stopDistance: number;
             isClimb?: boolean,
             onReach?: () => void;
         }
     ): boolean {
+        const stopDistance = 0.4;
         const targetPos = v3_0.set(target.worldPosition);
 
         if (!options.isClimb) {
@@ -170,7 +163,7 @@ export class NPCController extends AbstractController {
             DebugDrawer.drawLine(this.node.worldPosition, dirNorm, distance, Color.RED);
         }
 
-        if (distance < options.stopDistance) {
+        if (distance < stopDistance) {
             options.onReach?.();
             return true;
         }
@@ -195,7 +188,9 @@ export class NPCController extends AbstractController {
             return;
         }
 
-        if (payload.round === this._round) return;
+        if (this._round === payload.round) {
+            return;
+        }
 
         this._round = payload.round;
         this._color = payload.color;
@@ -211,13 +206,19 @@ export class NPCController extends AbstractController {
         let best: Node = null;
         let bestDistance = Number.MAX_VALUE;
         const offsetZ = 1;
+        const randomSkip = Math.floor(Math.random() * 2); // немного рандома в выбор платформы, чтобы не выбирали одинаковые
+        let skipCount = 0;
 
         for (const platform of platforms) {
             const cp = platform.getComponent(ColorPlatform);
-            if (!cp || cp.colorType !== this._color) continue;
+            if (cp.colorType !== this._color) {
+                continue;
+            }
 
-            const dz = platform.worldPosition.z < this.node.worldPosition.z - offsetZ;
-            if (!dz) continue;
+            const isPlatformAhead = platform.worldPosition.z < this.node.worldPosition.z - offsetZ;
+            if (!isPlatformAhead) {
+                continue;
+            }
 
             const dist = v3_0
                 .set(platform.worldPosition)
@@ -225,6 +226,10 @@ export class NPCController extends AbstractController {
                 .length();
 
             if (dist < bestDistance) {
+                if (randomSkip > skipCount) {
+                    skipCount++;
+                    continue;
+                }
                 bestDistance = dist;
                 best = platform;
             }
@@ -237,12 +242,18 @@ export class NPCController extends AbstractController {
         // NPC не подвергается повороту камеры, смотрим на цель напрямую
     }
 
-    onRespawn() {
+    protected _onRespawn() {
+        this.inputDegree = this.inputOffset = 0;
+        this.inputCos = this.inputSin = 0;
         this._rb?.setLinearVelocity(Vec3.ZERO);
         this._currentState?.beforeRespawn();
-        this._delay = 1;
+        this._delay = Math.round(Math.random() * 1 + 1); // немного задержки перед стартом, плюс рандом чтобы не зацикливались в одно и тоже
         this.currentTargetIndex = this.spawnIndex;
+        this._round = 0;
+        this._color = null;
         this._closestPlatform = null;
         this._tryFinish = false;
+        const spawnNode = this.targetsRoot.children[this.spawnIndex];
+        this.node.setWorldPosition(spawnNode.worldPosition);
     }
 }

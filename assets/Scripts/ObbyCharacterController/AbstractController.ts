@@ -152,7 +152,7 @@ export abstract class AbstractController extends Component {
         this._onRespawn();
     }
 
-    private _onRespawn(): void {};
+    protected _onRespawn(): void {};
 
     public lookAtDegree(degree: number) {};
     public playSound(clipName: string, volume: number = 1): void {};
