@@ -2,10 +2,16 @@ import { _decorator, Component, Node } from 'cc';
 import { GameEvent, GlobalEventBus } from '../Events/GlobalEventBus';
 const { ccclass, property } = _decorator;
 
-@ccclass('Canvas')
-export class Canvas extends Component {
+@ccclass('MainCanvas')
+export class MainCanvas extends Component {
     @property({type: Node})
     public joystickUI: Node | null = null;
+
+    @property({type: Node})
+    public soundUI: Node | null = null;
+
+    @property({type: Node})
+    public colorChallenge: Node | null = null;
 
     protected onEnable(): void {
         GlobalEventBus.on(GameEvent.GAME_END, this._onGameEnd, this);
@@ -16,8 +22,6 @@ export class Canvas extends Component {
     }
 
     private _onGameEnd() {
-        this.joystickUI.active = false;
+        this.joystickUI.active = this.soundUI.active = this.colorChallenge.active = false;
     }
 }
-
-
