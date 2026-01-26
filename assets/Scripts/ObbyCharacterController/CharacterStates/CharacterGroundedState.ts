@@ -18,7 +18,7 @@ export class CharacterGroundedState extends CharacterAbstractState {
     }
 
     onEnter() {
-        if (this._input.offset > 0) {
+        if (this._controller.inputOffset > 0) {
             this._anim.crossFade(this.moveAnimClip.name, 0.5);
         } else {
             this._anim.crossFade(this.idleAnimClip.name, 0.5);
@@ -27,12 +27,12 @@ export class CharacterGroundedState extends CharacterAbstractState {
 
     public updateState(deltaTime: number) {
         if (!this._groundCheck.isGroundBelow) {
-            this._cm.setState(CharacterAirState);
+            this._controller.setState(CharacterAirState);
             return;
         }
 
         if (this._climbableCheck.canClimb) {
-            this._cm.setState(CharacterClingState);
+            this._controller.setState(CharacterClingState);
             return;
         }
 
@@ -40,7 +40,7 @@ export class CharacterGroundedState extends CharacterAbstractState {
     }
 
     public onMoveInput(degree: number, offset: number): void {
-        this._baseLookRotate(degree);
+        this._controller.lookAtDegree(degree);
         const moveAnimState = this._anim.getState(this.moveAnimClip.name);
         this._anim.crossFade(this.moveAnimClip.name, 0.1);
         moveAnimState.speed = offset;
@@ -52,6 +52,6 @@ export class CharacterGroundedState extends CharacterAbstractState {
     }
 
     public onJump() {
-        this._cm.setState(CharacterAirState, {doJump: true});
+        this._controller.setState(CharacterAirState, {doJump: true});
     }
 }

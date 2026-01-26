@@ -3,7 +3,6 @@ import { CharacterGroundedState } from './CharacterGroundedState';
 import { CharacterClingState } from './CharacterClingState';
 import { CharacterAbstractState } from './CharacterAbstractState';
 import { v3_0, v3_1 } from '../../General/Constants';
-import { GameEvent, GlobalEventBus } from '../../Events/GlobalEventBus';
 const { ccclass, property } = _decorator;
 
 @ccclass('CharacterAirState')
@@ -56,7 +55,7 @@ export class CharacterAirState extends CharacterAbstractState {
         }
 
         if (this._climbableCheck.canClimb) {
-            this._cm.setState(CharacterClingState);
+            this._controller.setState(CharacterClingState);
             return;
         }
 
@@ -69,7 +68,7 @@ export class CharacterAirState extends CharacterAbstractState {
     }
 
     public onMoveInput(degree: number, offset: number): void {
-        this._baseLookRotate(degree);
+        this._controller.lookAtDegree(degree);
     }
 
     public onExit(nextState?: CharacterAbstractState): void {
@@ -94,7 +93,7 @@ export class CharacterAirState extends CharacterAbstractState {
             return;
         }
 
-        this._cm.playSound('jump');
+        this._controller.playSound('jump');
         this._curJumpTimes++;
         const newVelocity = v3_0;
         this._rb.getLinearVelocity(newVelocity);
@@ -110,7 +109,7 @@ export class CharacterAirState extends CharacterAbstractState {
     }
 
     private _detach() {
-        this._cm.playSound('jump');
+        this._controller.playSound('jump');
         const newVelocity = v3_0.set(Vec3.ZERO);
         newVelocity.y = this.detachJumpVelocity;
         const back = v3_1.set(this.node.forward).negative();
@@ -129,6 +128,6 @@ export class CharacterAirState extends CharacterAbstractState {
 
     private _onLand() {
         this._anim.crossFade(this.jumpLandAnimClip.name);
-        this._cm.setState(CharacterGroundedState);
+        this._controller.setState(CharacterGroundedState);
     }
 }

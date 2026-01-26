@@ -56,19 +56,16 @@
       },
       {
         "__id__": 272
-      },
-      {
-        "__id__": 274
       }
     ],
     "_prefab": {
-      "__id__": 276
+      "__id__": 274
     },
     "_lpos": {
       "__type__": "cc.Vec3",
       "x": -0.568,
-      "y": 1,
-      "z": -8.818
+      "y": 1.169,
+      "z": 1.567
     },
     "_lrot": {
       "__type__": "cc.Quat",
@@ -7556,7 +7553,7 @@
     "fileId": "e9uqnFIRFHRbGvN1+Psshv"
   },
   {
-    "__type__": "d197aTs7v1GkpwypdJ1ezJ8",
+    "__type__": "1150dm+9lRLGbiTdOrMlhdg",
     "_name": "",
     "_objFlags": 0,
     "__editorExtras__": {},
@@ -7567,30 +7564,14 @@
     "__prefab": {
       "__id__": 261
     },
-    "isPlayer": true,
+    "isPlayer": false,
     "mainCamera": null,
     "maxVelocity": 4,
     "anim": {
       "__id__": 249
     },
-    "_id": ""
-  },
-  {
-    "__type__": "cc.CompPrefabInfo",
-    "fileId": "022sx6FiNABrfmsjQr4wnk"
-  },
-  {
-    "__type__": "1150dm+9lRLGbiTdOrMlhdg",
-    "_name": "",
-    "_objFlags": 0,
-    "__editorExtras__": {},
-    "node": {
-      "__id__": 1
-    },
-    "_enabled": true,
-    "__prefab": {
-      "__id__": 263
-    },
+    "spawnTarget": null,
+    "spawnOffsetY": 1,
     "_id": ""
   },
   {
@@ -7607,7 +7588,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 265
+      "__id__": 263
     },
     "rayCastMaxDistance": 0.4,
     "offsetY": 0.2,
@@ -7630,7 +7611,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 267
+      "__id__": 265
     },
     "collider": {
       "__id__": 252
@@ -7659,7 +7640,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 269
+      "__id__": 267
     },
     "idleAnimClip": {
       "__uuid__": "ad458d2b-05f5-4d4a-ab6a-936cd46d9766@e6c45",
@@ -7685,7 +7666,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 271
+      "__id__": 269
     },
     "jumpVelocity": 6,
     "maxJumpTimes": 1,
@@ -7723,7 +7704,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 273
+      "__id__": 271
     },
     "climbSpeed": 2.5,
     "idleAnimClip": {
@@ -7750,7 +7731,7 @@
     },
     "_enabled": true,
     "__prefab": {
-      "__id__": 275
+      "__id__": 273
     },
     "fallThreshold": -5,
     "_id": ""
@@ -7768,7 +7749,6 @@
       "__id__": 0
     },
     "fileId": "fa+jcoofZHObE1zTCBMNAw",
-    "instance": null,
-    "targetOverrides": null
+    "targetOverrides": []
   }
 ]

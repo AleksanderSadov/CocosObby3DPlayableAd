@@ -35,7 +35,7 @@ export class CharacterClingState extends CharacterAbstractState {
         Quat.fromViewUp(targetQuat, wallForward, up);
         this.node.setRotation(targetQuat);
 
-        if (this._input.offset > 0) {
+        if (this._controller.inputOffset > 0) {
             this._anim.crossFade(this.moveAnimClip.name, 0.5);
         } else {
             this._anim.crossFade(this.idleAnimClip.name, 0.5);
@@ -44,12 +44,12 @@ export class CharacterClingState extends CharacterAbstractState {
 
     updateState(deltaTime: number) {
         if (!this._climbableCheck.canClimb) {
-            this._cm.setState(CharacterAirState);
+            this._controller.setState(CharacterAirState);
             return;
         }
 
-        const vertical = this._input.sin * this.climbSpeed * deltaTime;
-        const horizontal = this._input.cos * this.climbSpeed * deltaTime;
+        const vertical = this._controller.inputSin * this.climbSpeed * deltaTime;
+        const horizontal = this._controller.inputCos * this.climbSpeed * deltaTime;
         const localClimb = v3_0.set(horizontal, vertical, 0);
         const worldClimb = v3_1.set();
         Vec3.transformQuat(worldClimb, localClimb, this.node.worldRotation);
@@ -72,10 +72,10 @@ export class CharacterClingState extends CharacterAbstractState {
     public onExit(nextState?: CharacterAbstractState): void {
         this._climbableCheck.isClimbing = false;
         this._climbableCheck.startClingCooldown();
-        if (this._input.offset > 0) {
+        if (this._controller.inputOffset > 0) {
             // offset > 0, значит есть инпут движения и поворачиваемся в сторону движения
             // Если не повернуть персонажа, то была проблема на краю застревали в стене
-            this._baseLookRotate(this._input.degree); 
+            this._controller.lookAtDegree(this._controller.inputDegree);
         } else {
             // Инпута движения в сторону не было, поворачивать персонажа не надо. Например если нажать только прыжок для отскока от стены
         }
@@ -84,6 +84,6 @@ export class CharacterClingState extends CharacterAbstractState {
     }
 
     public onJump() {
-        this._cm.setState(CharacterAirState, {doDetach: true});
+        this._controller.setState(CharacterAirState, {doDetach: true});
     }
 }

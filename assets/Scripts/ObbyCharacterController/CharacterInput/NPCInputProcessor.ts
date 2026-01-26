@@ -1,10 +1,8 @@
-import { _decorator, Color, Enum, Node } from 'cc';
+import { _decorator, Color, Enum, Node, Vec3 } from 'cc';
 import { ColorChallengeType, v3_0, v3_1, v3_2 } from '../../General/Constants';
 import { CharacterInputProcessor } from './CharacterInputProcessor';
 import { DEBUG } from 'cc/env';
 import { DebugDrawer } from '../../Debug/DebugDrawer';
-import { CustomNodeEvent } from '../../Events/CustomNodeEvents';
-import { CharacterMovement } from 'db://assets/EasyController/kylins_easy_controller/CharacterMovement';
 import { GameEvent, GlobalEventBus } from '../../Events/GlobalEventBus';
 import { ColorPlatform } from '../../ColorChallenge/ColorPlatform';
 const { ccclass, property } = _decorator;
@@ -38,16 +36,15 @@ export class NPCInputProcessor extends CharacterInputProcessor {
     @property({readonly: true, visible: true, serializable: false})
     private _finished = false;
 
-    private _cm: CharacterMovement;
     private _delay = 1;
     
     // Для тестирования можешь цеплять камеру за NPC и смотреть его путь. Main Camera -> ThirdPersonCamera -> Target
     // Можешь перетащить в spawnTarget нужный участок пути, чтобы NPC начинал с него
     // NPC не начнут последний раунд с цветами, но можешь дропнуть себя на платформу для активации
     onLoad() {
-        this._cm = this.getComponent(CharacterMovement);
-        const spawnTarget = this._cm.spawnTarget;
-        if (this._cm.spawnTarget) {
+        super.onLoad();
+        const spawnTarget = this.spawnTarget;
+        if (this.spawnTarget) {
             for (let index = 0; index < this.targetsRoot.children.length; index++) {
                 const node = this.targetsRoot.children[index];
                 if (node == spawnTarget) {
@@ -60,19 +57,30 @@ export class NPCInputProcessor extends CharacterInputProcessor {
     }
 
     protected onEnable(): void {
-        this.node.on(CustomNodeEvent.BEFORE_RESPAWN, this._beforeRespawn, this);
+        super.onEnable();
         GlobalEventBus.on(GameEvent.COLOR_ROUND_TICK, this._onRoundTick, this);
     }
 
     protected onDisable(): void {
-        this.node.off(CustomNodeEvent.BEFORE_RESPAWN, this._beforeRespawn, this);
+        super.onDisable();
         GlobalEventBus.off(GameEvent.COLOR_ROUND_TICK, this._onRoundTick, this);
     }
-
     
+    // Тут надо рефакторить и вынести инпуты и ИИ, убрать магические числа, но пока так
     update(dt: number) {
+        super.update(dt);
+
         if (this._finished) {
             return;
+        }
+
+        if (this._delay > 0) {
+            this._delay -= dt;
+            return;
+        }
+
+        if (this.node.position.z <= -50) {
+            this.currentTargetIndex = 12;
         }
 
         if (this._tryFinish) {
@@ -80,16 +88,12 @@ export class NPCInputProcessor extends CharacterInputProcessor {
             return;
         }
 
-        if (this._isColorRoundActive()) {
+        if (this._round > 0 && this.currentTargetIndex >= 11) {
             this._updateColorRound(dt);
             return;
         }
 
         this._updateRouteMovement(dt);
-    }
-
-    private _isColorRoundActive(): boolean {
-        return this._round > 0;
     }
 
     private _updateColorRound(dt: number) {
@@ -115,12 +119,16 @@ export class NPCInputProcessor extends CharacterInputProcessor {
             return;
         }
 
-        if (this._applyDelay(dt)) return;
         const isClimbTarget = this.currentTarget.name.includes('climb');
         const reached = this._moveTowardsNode(this.currentTarget, dt, {
             stopDistance: 0.3,
             isClimb: isClimbTarget,
-            onReach: () => this.currentTargetIndex++
+            onReach: () => {
+                if (this.currentTargetIndex == 7 || this.currentTargetIndex == 11) {
+                    this.spawnIndex = this.currentTargetIndex;
+                }
+                this.currentTargetIndex++;
+            }
         });
     }
 
@@ -175,16 +183,10 @@ export class NPCInputProcessor extends CharacterInputProcessor {
         }
 
         if (this.currentTarget?.name.includes('jump')) {
-            this._onButton('btn_slot_0');
+            this._currentState.onJump();
         }
         
         return false;
-    }
-
-    private _applyDelay(dt: number): boolean {
-        if (this._delay <= 0) return false;
-        this._delay -= dt;
-        return true;
     }
 
     private _onRoundTick(payload: any) {
@@ -231,12 +233,16 @@ export class NPCInputProcessor extends CharacterInputProcessor {
         return best;
     }
 
-    private _beforeRespawn() {
+    public lookAtDegree(degree: number): void {
+        // NPC не подвергается повороту камеры, смотрим на цель напрямую
+    }
+
+    onRespawn() {
+        this._rb?.setLinearVelocity(Vec3.ZERO);
+        this._currentState?.beforeRespawn();
         this._delay = 1;
         this.currentTargetIndex = this.spawnIndex;
         this._closestPlatform = null;
         this._tryFinish = false;
     }
 }
-
-

@@ -1,5 +1,4 @@
-import { _decorator, AnimationClip, Component, ICollisionEvent, ITriggerEvent, RigidBody, SkeletalAnimation, Vec3 } from 'cc';
-import { CharacterMovement } from 'db://assets/EasyController/kylins_easy_controller/CharacterMovement';
+import { _decorator, AnimationClip, Component, RigidBody, SkeletalAnimation, Vec3 } from 'cc';
 import { v3_0, v3_1, v3_2, v3_3 } from '../../General/Constants';
 import { GroundCheck } from '../GroundCheck';
 import { ClimbableCheck } from '../ClimbableCheck';
@@ -8,18 +7,16 @@ const { ccclass } = _decorator;
 
 @ccclass('CharacterAbstractState')
 export abstract class CharacterAbstractState extends Component {
-    protected _cm: CharacterMovement;
+    protected _controller: CharacterInputProcessor;
     protected _rb: RigidBody;
     protected _anim: SkeletalAnimation;
-    protected _input: CharacterInputProcessor;
     protected _groundCheck: GroundCheck;
     protected _climbableCheck: ClimbableCheck;
 
     protected onLoad(): void {
-        this._cm = this.getComponent(CharacterMovement);
+        this._controller = this.getComponent(CharacterInputProcessor);
         this._rb = this.getComponent(RigidBody);
-        this._anim = this._cm.anim;
-        this._input = this.getComponent(CharacterInputProcessor);
+        this._anim = this._controller.anim;
         this._groundCheck = this.getComponent(GroundCheck);
         this._climbableCheck = this.getComponent(ClimbableCheck);
     }
@@ -29,20 +26,18 @@ export abstract class CharacterAbstractState extends Component {
     public updateState(deltaTime: number): void {}
     public onMoveInput(degree: number, offset: number): void {}
     public onMoveInputStop(): void {}
-    public onCollisionEnter(event: ICollisionEvent): void {}
-    public onTriggerEnter(event: ITriggerEvent): void {}
     public onJump(): void {}
     public beforeRespawn(): void {}
 
     protected _baseMovement() {
-        if (this._input.offset <= 0) {
+        if (this._controller.inputOffset <= 0) {
             return;
         }
         const currentVelocity = v3_0;
         this._rb.getLinearVelocity(currentVelocity);
         const newVelocity = v3_1;
         newVelocity.set(this.node.forward);
-        newVelocity.multiplyScalar(this._cm.maxVelocity * this._input.offset);
+        newVelocity.multiplyScalar(this._controller.maxVelocity * this._controller.inputOffset);
         newVelocity.y = currentVelocity.y;
 
         // Проблема: Если персонаж прыгнул в стену, то когда задаем скорость по направлению к стене тогда персонаж застревал в стене из за трения
@@ -66,19 +61,6 @@ export abstract class CharacterAbstractState extends Component {
         // Решение: пока не требуется отключить повороты персонажа физикой, т.е. выставить Angular Factor (0, 0, 0)
 
         this._rb.setLinearVelocity(newVelocity);
-    }
-
-    protected _baseLookRotate(degree: number) {
-        const uiToGame = -90; // //In a 2D interface, the x-axis is 0, while in a 3D scene, the area directly in front is 0, so a -90 degree rotation is needed. (Rotate 90 degrees clockwise)
-        if (this._cm.isPlayer) {
-            const cameraRotationY = this._cm.mainCamera.node.eulerAngles.y;
-            v3_0.set(0, cameraRotationY + degree + uiToGame, 0);
-            this.node.setRotationFromEuler(v3_0);
-        } else {
-            // v3_0.set(0, degree, 0);
-            // this.node.setRotationFromEuler(v3_0);
-        }
-        
     }
 
     protected initClips(clips: AnimationClip[]) {
