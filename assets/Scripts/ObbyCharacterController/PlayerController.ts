@@ -1,12 +1,12 @@
 import { _decorator, Vec3 } from 'cc';
-import { CharacterInputProcessor } from './CharacterInputProcessor';
-import { EasyController, EasyControllerEvent } from 'db://assets/EasyController/kylins_easy_controller/EasyController';
-import { GameEvent, GlobalEventBus } from '../../Events/GlobalEventBus';
-import { v3_0 } from '../../General/Constants';
+import { AbstractController } from './AbstractController';
+import { EasyController, EasyControllerEvent } from '../../EasyController/kylins_easy_controller/EasyController';
+import { GameEvent, GlobalEventBus } from '../Events/GlobalEventBus';
+import { v3_0 } from '../General/Constants';
 const { ccclass, property } = _decorator;
 
-@ccclass('PlayerInputProcessor')
-export class PlayerInputProcessor extends CharacterInputProcessor {
+@ccclass('PlayerController')
+export class PlayerController extends AbstractController {
     protected onEnable(): void {
         super.onEnable();
         EasyController.on(EasyControllerEvent.MOVEMENT, this._onMoveInput, this);
@@ -38,7 +38,7 @@ export class PlayerInputProcessor extends CharacterInputProcessor {
     }
 
     public lookAtDegree(degree: number): void {
-        // In a 2D interface, the x-axis is 0, while in a 3D scene, the area directly in front is 0, so a -90 degree rotation is needed. (Rotate 90 degrees clockwise)
+        // EasyController: In a 2D interface, the x-axis is 0, while in a 3D scene, the area directly in front is 0, so a -90 degree rotation is needed. (Rotate 90 degrees clockwise)
         const uiToGame = -90;
         const cameraRotationY = this.mainCamera.node.eulerAngles.y;
         v3_0.set(0, cameraRotationY + degree + uiToGame, 0);
@@ -46,9 +46,7 @@ export class PlayerInputProcessor extends CharacterInputProcessor {
     }
 
     public playSound(clipName: string, volume: number = 1) {
-        if (this.isPlayer) {
-            GlobalEventBus.emit(GameEvent.PLAY_SOUND, clipName, volume);
-        }
+        GlobalEventBus.emit(GameEvent.PLAY_SOUND, clipName, volume);
     }
 
     public onRespawn(): void {

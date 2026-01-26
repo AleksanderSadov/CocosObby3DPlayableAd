@@ -1,14 +1,14 @@
 import { _decorator, Color, Enum, Node, Vec3 } from 'cc';
-import { ColorChallengeType, v3_0, v3_1, v3_2 } from '../../General/Constants';
-import { CharacterInputProcessor } from './CharacterInputProcessor';
+import { AbstractController } from './AbstractController';
+import { ColorChallengeType, v3_0, v3_1, v3_2 } from '../General/Constants';
+import { GameEvent, GlobalEventBus } from '../Events/GlobalEventBus';
 import { DEBUG } from 'cc/env';
-import { DebugDrawer } from '../../Debug/DebugDrawer';
-import { GameEvent, GlobalEventBus } from '../../Events/GlobalEventBus';
-import { ColorPlatform } from '../../ColorChallenge/ColorPlatform';
+import { DebugDrawer } from '../Debug/DebugDrawer';
+import { ColorPlatform } from '../ColorChallenge/ColorPlatform';
 const { ccclass, property } = _decorator;
 
-@ccclass('NPCInputProcessor')
-export class NPCInputProcessor extends CharacterInputProcessor {
+@ccclass('NPCController')
+export class NPCController extends AbstractController {
     @property(Node)
     public targetsRoot: Node | null = null;
 

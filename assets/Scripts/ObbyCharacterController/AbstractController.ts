@@ -1,16 +1,16 @@
 import { _decorator, Camera, CapsuleCollider, Component, find, ICollisionEvent, ITriggerEvent, Node, RigidBody, SkeletalAnimation, Vec3 } from 'cc';
-import { CharacterAirState } from '../CharacterStates/CharacterAirState';
-import { CharacterAbstractState } from '../CharacterStates/CharacterAbstractState';
+import { GroundCheck } from './GroundCheck';
+import { ClimbableCheck } from './ClimbableCheck';
+import { CharacterAbstractState } from './CharacterStates/CharacterAbstractState';
 import { EDITOR, EDITOR_NOT_IN_PREVIEW } from 'cc/env';
-import { GroundCheck } from '../GroundCheck';
-import { ClimbableCheck } from '../ClimbableCheck';
-import { Hazard } from '../../Obstacles/Hazard';
-import { CustomNodeEvent } from '../../Events/CustomNodeEvents';
+import { CustomNodeEvent } from '../Events/CustomNodeEvents';
+import { CharacterAirState } from './CharacterStates/CharacterAirState';
+import { Hazard } from '../Obstacles/Hazard';
 const { ccclass, property } = _decorator;
 
 // Это на основе EasyController плагина, но модифицировал (добавил карабканье, проверку земли, правку застревания в стене в прыжке из-за трения и др) и зарефакторил (стейт машин и разделение логики) для лучшей читаемости
-@ccclass('CharacterInputProcessor')
-export abstract class CharacterInputProcessor extends Component {
+@ccclass('AbstractController')
+export abstract class AbstractController extends Component {
     @property
     isPlayer = false;
     @property(Camera)

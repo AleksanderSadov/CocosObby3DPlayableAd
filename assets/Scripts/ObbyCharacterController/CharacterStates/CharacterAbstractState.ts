@@ -2,19 +2,19 @@ import { _decorator, AnimationClip, Component, RigidBody, SkeletalAnimation, Vec
 import { v3_0, v3_1, v3_2, v3_3 } from '../../General/Constants';
 import { GroundCheck } from '../GroundCheck';
 import { ClimbableCheck } from '../ClimbableCheck';
-import { CharacterInputProcessor } from '../CharacterInput/CharacterInputProcessor';
+import { AbstractController } from '../AbstractController';
 const { ccclass } = _decorator;
 
 @ccclass('CharacterAbstractState')
 export abstract class CharacterAbstractState extends Component {
-    protected _controller: CharacterInputProcessor;
+    protected _controller: AbstractController;
     protected _rb: RigidBody;
     protected _anim: SkeletalAnimation;
     protected _groundCheck: GroundCheck;
     protected _climbableCheck: ClimbableCheck;
 
     protected onLoad(): void {
-        this._controller = this.getComponent(CharacterInputProcessor);
+        this._controller = this.getComponent(AbstractController);
         this._rb = this.getComponent(RigidBody);
         this._anim = this._controller.anim;
         this._groundCheck = this.getComponent(GroundCheck);

@@ -7564,7 +7564,7 @@
     "__prefab": {
       "__id__": 261
     },
-    "isPlayer": false,
+    "isPlayer": true,
     "mainCamera": null,
     "maxVelocity": 4,
     "anim": {
