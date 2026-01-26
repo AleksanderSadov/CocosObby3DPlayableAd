@@ -216,7 +216,7 @@
       }
     },
     "graphics": {
-      "pipeline": "legacy-pipeline"
+      "pipeline": "custom-pipeline"
     }
   }
 }
