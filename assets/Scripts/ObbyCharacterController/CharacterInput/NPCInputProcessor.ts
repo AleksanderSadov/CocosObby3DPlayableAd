@@ -1,16 +1,21 @@
-import { _decorator, Color, Node, Vec3 } from 'cc';
-import { ray, v3_0, v3_1, v3_2 } from '../../General/Constants';
+import { _decorator, Color, Enum, Node } from 'cc';
+import { ColorChallengeType, v3_0, v3_1, v3_2 } from '../../General/Constants';
 import { CharacterInputProcessor } from './CharacterInputProcessor';
 import { DEBUG } from 'cc/env';
 import { DebugDrawer } from '../../Debug/DebugDrawer';
 import { CustomNodeEvent } from '../../Events/CustomNodeEvents';
 import { CharacterMovement } from 'db://assets/EasyController/kylins_easy_controller/CharacterMovement';
+import { GameEvent, GlobalEventBus } from '../../Events/GlobalEventBus';
+import { ColorPlatform } from '../../ColorChallenge/ColorPlatform';
 const { ccclass, property } = _decorator;
 
 @ccclass('NPCInputProcessor')
 export class NPCInputProcessor extends CharacterInputProcessor {
     @property(Node)
     public targetsRoot: Node | null = null;
+
+    @property(Node)
+    public finishLineRoot: Node | null = null;
 
     @property({type: Node, readonly: true, visible: true, serializable: false})
     public currentTarget: Node | null = null;
@@ -48,14 +53,28 @@ export class NPCInputProcessor extends CharacterInputProcessor {
 
     protected onEnable(): void {
         this.node.on(CustomNodeEvent.BEFORE_RESPAWN, this._beforeRespawn, this);
+        // GlobalEventBus.on(GameEvent.COLOR_GAME_START, this._startGame, this);
+        // GlobalEventBus.on(GameEvent.COLOR_GAME_STOP, this._stopGame, this);
+        GlobalEventBus.on(GameEvent.COLOR_ROUND_TICK, this._onRoundTick, this);
     }
 
     protected onDisable(): void {
         this.node.off(CustomNodeEvent.BEFORE_RESPAWN, this._beforeRespawn, this);
+        GlobalEventBus.off(GameEvent.COLOR_ROUND_TICK, this._onRoundTick, this);
     }
 
     // Для тестирования также можешь цеплять камеру за NPC и смотреть его путь. Main Camera -> ThirdPersonCamera -> Target
     update(dt: number) {
+        if (this._round > 0) {
+            if (this._closestPlatform) {
+                this._goToTarget(this._closestPlatform, dt);
+            } else {
+                // this.targetsRoot = this.finishLineRoot;
+            }
+            return;
+        }
+
+
         this.currentTarget = this.targetsRoot.children[this.currentTargetIndex];
 
         const isClimbing = this._cm.currentStateName == 'CharacterClingState';
@@ -108,9 +127,75 @@ export class NPCInputProcessor extends CharacterInputProcessor {
         }
     }
 
+    @property({readonly: true, visible: true, serializable: false})
+    private _round = 0;
+    @property({type: Enum(ColorChallengeType),readonly: true, visible: true, serializable: false})
+    private _color: ColorChallengeType;
+    @property({readonly: true, visible: true, serializable: false})
+    private _closestPlatform: Node | null = null;
+    private _onRoundTick(payload: any) {
+        // console.log("NPCInputProcessor _onRoundTick", payload);
+        if (payload.color == undefined) {
+            // this._color = undefined;
+            // this._closestPlatform = null;
+            this._onMoveInputStop();
+            return;
+        }
+
+        if (payload.round != this._round) {
+            this._round = payload.round;
+            this._color = payload.color;
+            let closestPlatform = null;
+            let closestDistance = Number.MAX_VALUE;
+            payload.platformsRoot.children.forEach((platformNode: Node) => {
+                const colorPlatform = platformNode.getComponent(ColorPlatform);
+                if (colorPlatform.colorType == this._color) {
+                    const distance = v3_0.set(platformNode.worldPosition).subtract(this.node.worldPosition).length();
+                    const offset = 1; // чтобы не засчитал на которой уже стоим
+                    const towardsFinish = platformNode.worldPosition.z < this.node.worldPosition.z - offset;
+                    if (towardsFinish && distance < closestDistance) {
+                        closestDistance = distance;
+                        closestPlatform = platformNode;
+                    }
+                }
+            });
+            this._closestPlatform = closestPlatform;
+        }
+    }
+
+    _goToTarget(target: Node, dt: number) {
+        const targetPos = v3_0.set(target.worldPosition);
+        targetPos.y = this.node.worldPosition.y;
+
+        const dir = v3_1.set(targetPos).subtract(this.node.worldPosition);
+        const distance = dir.length();
+        const dirNorm = v3_2.set(dir).normalize();
+
+        if (DEBUG) {
+            DebugDrawer.drawLine(this.node.worldPosition, dirNorm, distance, Color.RED);
+        }
+
+        if (this._delay > 0) {
+            this._delay -= dt;
+            return;
+        }
+
+        const stopDistance = 0.3;
+        if (distance < stopDistance) {
+            this._onMoveInputStop();
+            this.currentTargetIndex++;
+            return;
+        }
+
+        this.node.lookAt(targetPos);
+        this._onMoveInput(0, 1);
+    }
+
     private _beforeRespawn() {
         this._delay = 1;
         this.currentTargetIndex = this.spawnIndex;
+        // this._color = undefined;
+        // this._closestPlatform = null;
     }
 }
 

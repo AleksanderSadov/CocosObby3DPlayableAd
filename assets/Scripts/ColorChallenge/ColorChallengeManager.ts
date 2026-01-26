@@ -25,9 +25,11 @@ export class ColorChallengeManager extends Component {
 
     @property({type: Enum(ColorChallengeType), readonly: true, visible: true, serializable: false})
     private _activeColor: ColorChallengeType;
+    @property({readonly: true, visible: true, serializable: false})
     private _roundCountdown = 0;
     private _waitCountdown = 0;
     private _running = false;
+    private _round = 0;
 
     onEnable() {
         GlobalEventBus.on(GameEvent.COLOR_GAME_START, this._startGame, this);
@@ -55,13 +57,14 @@ export class ColorChallengeManager extends Component {
     }
 
     private _startRound() {
+        this._round += 1;
         const colors = Object.keys(ColorChallengeType);
         const randIndex = Math.floor(Math.random() * colors.length);
         this._activeColor = ColorChallengeType[colors[randIndex]];
         this._roundCountdown = this.roundDuration;
-        GlobalEventBus.emit(GameEvent.COLOR_ROUND_TICK, { color: this._activeColor, roundTimer: this._roundCountdown });
-        this.schedule(this._tickRound, 1);
         this.activatePlatforms(colors);
+        GlobalEventBus.emit(GameEvent.COLOR_ROUND_TICK, { color: this._activeColor, roundTimer: this._roundCountdown, round: this._round, platformsRoot: this.platformsRoot });
+        this.schedule(this._tickRound, 1);
     }
 
     private _stopTimers() {
@@ -71,7 +74,7 @@ export class ColorChallengeManager extends Component {
     private _tickRound() {
         this._roundCountdown -= 1;
         if (this._roundCountdown >= 0) {
-            GlobalEventBus.emit(GameEvent.COLOR_ROUND_TICK, { color: this._activeColor, roundTimer: this._roundCountdown });
+            GlobalEventBus.emit(GameEvent.COLOR_ROUND_TICK, { color: this._activeColor, roundTimer: this._roundCountdown, round: this._round, platformsRoot: this.platformsRoot });
         } else {
             this.unschedule(this._tickRound);
             this.deactivatePlatforms(this._activeColor);
