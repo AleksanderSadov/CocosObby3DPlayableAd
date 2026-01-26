@@ -6,10 +6,8 @@
 
 **Генерация playable**
 
-1. Руководствуюсь требованиями UnityAds: https://docs.unity.com/en-us/grow/acquire/creatives/playable/specifications
-    1. Билд одним inline файлом html
-    2. Размер меньше 5 Мб
 1. В кокосе из коробки нет билда именно под playable, но нашел подходящий готовый билдер https://github.com/ppgee/cocos-pnp
+1. Сборка playable меню окна Cocos Creator -> Extension -> playable-adapter -> build. Собирается web-mobile билд, учитывается конфиг web-mobile билда, так что там выставляем настройки, но запускаем билд через extension 
 1. ВНИМАНИЕ!!! Во время сборки playable билда нужно отключить MD5 Cache, иначе будут ошибки по типу 
 ```
 Google.html:121 SyntaxError: "undefined" is not valid JSON at JSON.parse (<anonymous>) at __adapter_get_imports (Google.html:121:11388842) at window.__adapter_init (Google.html:121:11393758) at __adapter_success (Google.html:121:11395067) at __adapter_exec_js (Google.html:121:11394752) at __adapter_unzip (Google.html:121:11394468) at Google.html:121:11395096 at Google.html:121:11395134
@@ -23,11 +21,10 @@ Google.html:121 SyntaxError: "undefined" is not valid JSON at JSON.parse (<anony
 
 **Feature Cropping**
 
-1. Например у UnityAds требование inline файл билд не больше 5Мб
-1. Для проверки запускаю обычный web-mobile билд и в инспекторе сортирую по размеру файлов чтобы расставить приоритеты на что в первую очередь обратить внимание
-    1. Убрал HDR скайбоксы ~1-2 Мб. Убрал лишние фичи.
-    1. Анимации оставил. Но можно еще посжимать текстуры модели
-    1. Ещё ~1.5 Мб можно убрать перейдя с физики bullet на cannon
+1. Например у UnityAds требование inline файл билд не больше 5Мб: https://docs.unity.com/en-us/grow/acquire/creatives/playable/specifications
+1. Убрал HDR скайбоксы ~1-2 Мб. Убрал лишние фичи.
+1. Анимации оставил. Но можно еще посжимать текстуры модели
+1. Ещё ~1.5 Мб можно убрать перейдя с физики bullet на cannon
 
 **Physics Engine**
 
