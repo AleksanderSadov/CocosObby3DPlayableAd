@@ -1,5 +1,6 @@
-import { _decorator, ColliderComponent, Component, Enum } from 'cc';
+import { _decorator, ColliderComponent, Component, Enum, ITriggerEvent } from 'cc';
 import { GameEvent, GlobalEventBus } from '../Events/GlobalEventBus';
+import { Player } from '../ObbyCharacterController/Player';
 const { ccclass, property } = _decorator;
 
 @ccclass('GameEventTrigger')
@@ -21,8 +22,11 @@ export class GameEventTrigger extends Component {
         this._trigger.off('onTriggerEnter', this.onTriggerEnter, this);
     }
 
-    onTriggerEnter(event: any) {
-        GlobalEventBus.emit(this.gameEvent);
+    onTriggerEnter(event: ITriggerEvent) {
+        const player = event.otherCollider.node.getComponent(Player);
+        if (player) {
+            GlobalEventBus.emit(this.gameEvent);
+        }
     }
 }
 
