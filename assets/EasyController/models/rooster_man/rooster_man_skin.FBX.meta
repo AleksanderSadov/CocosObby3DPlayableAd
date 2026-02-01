@@ -15,7 +15,11 @@
         "gltfIndex": 0,
         "fixAlphaTransparencyArtifacts": true,
         "hasAlpha": true,
-        "type": "texture"
+        "type": "texture",
+        "compressSettings": {
+          "useCompressTexture": true,
+          "presetId": "93Yj/Q4zNJZIaA1osVI++u"
+        }
       },
       "ver": "1.0.3",
       "imported": true,
@@ -334,7 +338,7 @@
           {
             "roughness": 1,
             "mainTexture": {
-              "__uuid__": "a2f8f911-6a76-4c49-b9ae-0dfa37e43ed7@6c48a",
+              "__uuid__": "818afa8d-4f32-4b2f-8dd7-b09a3315ff50@3df8b",
               "__expectedType__": "cc.Texture2D"
             }
           },
